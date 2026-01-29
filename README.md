@@ -2,7 +2,7 @@
 
 A fun, experimental handheld console built using an ESP32 and a small OLED display. 
 
-<img src="images/GitHubImages/IMG20251229181103.jpg" width="300">
+<img src="GitHubImages/IMG20251229181103.jpg" width="300">
 
 
 ## What It Can Do
