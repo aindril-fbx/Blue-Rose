@@ -4,14 +4,8 @@
 #include <clock.h>
 #include <buttonBehav.h>
 
-#if CONFIG_IDF_TARGET_ESP32
-    // Classic ESP32
-    extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
-    
-#elif CONFIG_IDF_TARGET_ESP32C3
-    // ESP32-C3
-    extern U8G2_SH1106_128X64_NONAME_F_HW_I2C  u8g2;
-#endif
+extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
+
 bool Trunning = false;
 unsigned long startTime_ = 0;
 unsigned long duration = 0;

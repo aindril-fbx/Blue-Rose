@@ -21,14 +21,8 @@
 
 #define WAKE_PIN
 
-#if CONFIG_IDF_TARGET_ESP32
-    // Classic ESP32
-    U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE); // initialization for the 128x64px OLED display, [full framebuffer, size = 512 bytes]
-    
-#elif CONFIG_IDF_TARGET_ESP32C3
-    // ESP32-C3
-    U8G2_SH1106_128X64_NONAME_F_HW_I2C  u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE); // initialization for the 128x64px OLED display, [full framebuffer, size = 512 bytes]
-#endif
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
+
 BleKeyboard bleKeyboard;
 Preferences prefs;
 
