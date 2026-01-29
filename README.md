@@ -1,2 +1,2 @@
-# Robot_Buddy
+# BLUE ROSE
 ESP32 based digital companion
