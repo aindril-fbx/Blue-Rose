@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <U8g2lib.h> // u8g2 library is used to draw graphics on the OLED display
-#include <Wire.h>    // library required for IIC communication
+#include <U8g2lib.h>
+#include <Wire.h>
 #include <esp_sleep.h>
 #include <Preferences.h>
 #include "driver/gpio.h"
