@@ -53,7 +53,7 @@ const unsigned char epd_bitmap__gamepad [] PROGMEM = {
 const unsigned char *Icons[numberOfItems] = {
     epd_bitmap__BackArrowIcon,
     epd_bitmap__CompassIcon,
-    epd_bitmap__SankeIcon,
+    epd_bitmap__clock,
     epd_bitmap__icon,
     epd_bitmap__LaptopIcon,
     epd_bitmap__Settings,
@@ -62,7 +62,7 @@ const unsigned char *Icons[numberOfItems] = {
 };
 
 const char Icon_Names[numberOfItems][20] = {
-    "Back", "Compass", "Snake Game", "Button Test", "PC Control", "Settings", "Clock", "Games"};
+    "Back", "Compass", "Real Time", "Button Test", "PC Control", "Settings", "Clock", "Games"};
 #pragma endregion
 
 #pragma region "MainMenuAnimation"

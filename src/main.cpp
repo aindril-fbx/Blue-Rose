@@ -16,6 +16,7 @@
 #include <pomodoro.h>
 #include <clock.h>
 #include <games.h>
+#include <stats.h>
 
 #include <BleKeyboard.h>
 
@@ -187,10 +188,12 @@ void loop(void)
         break;;
     
         case 2:
-            snakeGame(upButtonTap(), downButtonTap(), leftButtonTap(), rightButtonTap()); // display the snake game
+            showStats();
+            //snakeGame(upButtonTap(), downButtonTap(), leftButtonTap(), rightButtonTap()); // display the snake game
             if (selectButtonTap())
             {
                 currentScene = 0;        // if the select button is pressed, go back to the main menu
+                gotInfo = 0;
             }
         break;
     
