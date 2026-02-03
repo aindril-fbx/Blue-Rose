@@ -2225,6 +2225,8 @@ void wifiSetup(void *param)
                "pool.ntp.org");
 
     struct tm timeinfo;
+    baseEpoch = 0;
+    baseRtcUs = 0;
     while (!getLocalTime(&timeinfo))
     {
         vTaskDelay(pdMS_TO_TICKS(500));

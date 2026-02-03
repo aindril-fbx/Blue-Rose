@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
-#include <Wire.h>
 #include <pomodoro.h>
 #include <stopWatch.h>
 #include <timer.h>
 #include <buttonBehav.h>
 #include <Preferences.h>
+#include <stats.h>
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 extern Preferences prefs;
@@ -14,6 +14,8 @@ static const unsigned char image_Arrow_bits[] U8X8_PROGMEM = {0x01, 0x03, 0x07, 
 static const unsigned char image_download_bits[] U8X8_PROGMEM = {0x9e, 0x3c, 0xcd, 0x59, 0xb7, 0x76, 0x0b, 0x68, 0x05, 0x50, 0x82, 0x20, 0x82, 0x20, 0x81, 0x40, 0x83, 0x60, 0x41, 0x40, 0x22, 0x20, 0x12, 0x20, 0x04, 0x10, 0x08, 0x08, 0xb4, 0x16, 0xc2, 0x21};
 static const unsigned char image_Layer_3_bits[] U8X8_PROGMEM = {0x01, 0x02, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x1e};
 
+static const unsigned char image_download_1_bits[] U8X8_PROGMEM = {0x04, 0x06, 0x07, 0x06, 0x04};
+
 enum ClockMode
 {
     TIMER,
@@ -21,6 +23,7 @@ enum ClockMode
     STOPWATCH,
     POMODORO,
     POMODORO_SETTING,
+    REALTIME,
     NONE
 };
 
@@ -47,7 +50,6 @@ unsigned long tduration = 0;
 
 void clockMenu()
 {
-
     if (downButtonTap())
     {
         currentState = (currentState + 1) % totalStates;
@@ -60,6 +62,7 @@ void clockMenu()
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
     // Layer 1
+    u8g2.drawXBMP(103, 10, 3, 5, image_download_1_bits);
     u8g2.setFont(u8g2_font_6x10_tr);
     u8g2.drawStr(3, 10, "# CLOCK");
 
@@ -278,14 +281,16 @@ void pomodoroSettings()
     u8g2.sendBuffer();
 }
 
-# pragma region
-static const unsigned char image_Begin_Select_bits[] U8X8_PROGMEM = {0xff,0xff,0xff,0x7f,0x00,0x01,0x00,0x00,0x40,0x00,0x01,0x00,0x00,0x40,0x00,0x01,0x00,0x00,0x40,0x02,0x01,0x00,0x00,0x40,0x06,0x01,0x00,0x00,0x40,0x0e,0x01,0x00,0x00,0x40,0x06,0x01,0x00,0x00,0x40,0x02,0x01,0x00,0x00,0x40,0x00,0x01,0x00,0x00,0x40,0x00,0x01,0x00,0x00,0x40,0x00,0xff,0xff,0xff,0x7f,0x00};
-static const unsigned char image_TimeSelect_bits[] U8X8_PROGMEM = {0x00,0x20,0x00,0x00,0x00,0x70,0x00,0x00,0x00,0xf8,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xff,0xff,0xff,0x03,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0x01,0x00,0x00,0x02,0xff,0xff,0xff,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xf8,0x00,0x00,0x00,0x70,0x00,0x00,0x00,0x20,0x00,0x00};
-# pragma endregion
+#pragma region
+static const unsigned char image_Begin_Select_bits[] U8X8_PROGMEM = {0xff, 0xff, 0xff, 0x7f, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x02, 0x01, 0x00, 0x00, 0x40, 0x06, 0x01, 0x00, 0x00, 0x40, 0x0e, 0x01, 0x00, 0x00, 0x40, 0x06, 0x01, 0x00, 0x00, 0x40, 0x02, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0xff, 0xff, 0xff, 0x7f, 0x00};
+static const unsigned char image_TimeSelect_bits[] U8X8_PROGMEM = {0x00, 0x20, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0x03, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0xff, 0xff, 0xff, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00};
+#pragma endregion
 
-void timerSettings(void) {
+void timerSettings(void)
+{
 
-    if(tsettingState < 4){
+    if (tsettingState < 4)
+    {
         if (rightButtonTap())
         {
             tsettingState = (tsettingState + 1) % ttotalStates;
@@ -294,7 +299,9 @@ void timerSettings(void) {
         {
             tsettingState = (tsettingState - 1 + ttotalStates) % ttotalStates;
         }
-    }else{
+    }
+    else
+    {
         if (leftButtonTap())
         {
             tsettingState = (tsettingState - 1 + ttotalStates) % ttotalStates;
@@ -305,99 +312,111 @@ void timerSettings(void) {
     u8g2.setBitmapMode(1);
     // Layer 2
     u8g2.setDrawColor(2);
-    
+
     // Layer 6
     u8g2.setFont(u8g2_font_profont10_tr);
     u8g2.drawStr(89, 58, "BEGIN");
-    
-    
+
     switch (tsettingState)
     {
-        case 0:
-            if(upButtonTap()){
-                thours = min(thours + 1, 99);
-            }
-            if(downButtonTap()){
-                thours = max(thours - 1, 0);
-            }
-            if (arrowBlink < arrowBlinkDelay / 2)
-            {
-                break;
-            }
-            u8g2.drawXBMP(15, 3, 26, 30, image_TimeSelect_bits);
+    case 0:
+        if (upButtonTap())
+        {
+            thours = min(thours + 1, 99);
+        }
+        if (downButtonTap())
+        {
+            thours = max(thours - 1, 0);
+        }
+        if (arrowBlink < arrowBlinkDelay / 2)
+        {
             break;
-        case 1:
-            if(upButtonTap()){
-                tminutes = min(tminutes + 1, 59);
-            }
-            if(downButtonTap()){
-                tminutes = max(tminutes - 1, 0);
-            }
-            if (arrowBlink < arrowBlinkDelay / 2)
-            {
-                break;
-            }
-            if (arrowBlink < arrowBlinkDelay / 2)
-            {
-                break;
-            }
-            u8g2.drawXBMP(51, 3, 26, 30, image_TimeSelect_bits);
+        }
+        u8g2.drawXBMP(15, 3, 26, 30, image_TimeSelect_bits);
+        break;
+    case 1:
+        if (upButtonTap())
+        {
+            tminutes = min(tminutes + 1, 59);
+        }
+        if (downButtonTap())
+        {
+            tminutes = max(tminutes - 1, 0);
+        }
+        if (arrowBlink < arrowBlinkDelay / 2)
+        {
             break;
-        case 2:
-            if(upButtonTap()){
-                tseconds = min(tseconds + 1, 59);
-            }
-            if(downButtonTap()){
-                tseconds = max(tseconds - 1, 0);
-            }
-            if (arrowBlink < arrowBlinkDelay / 2)
-            {
-                break;
-            }
-            if (arrowBlink < arrowBlinkDelay / 2)
-            {
-                break;
-            }
-            u8g2.drawXBMP(87, 3, 26, 30, image_TimeSelect_bits);
+        }
+        if (arrowBlink < arrowBlinkDelay / 2)
+        {
             break;
-        case 3:
-            if(trepeats < 10){
-                if(upButtonTap()){
-                    trepeats = min(trepeats + 1, 10000);
-                }
-                if(downButtonTap()){
-                    trepeats = max(trepeats - 1, 0);
-                }
-            }else{
-                if(upButtonHold()){
-                    trepeats = min(trepeats + 1, 10000);
-                }
-                if(downButtonHold()){
-                    trepeats = max(trepeats - 1, 0);
-                }
-            }
-            if (arrowBlink < arrowBlinkDelay / 2)
-            {
-                break;
-            }
-            u8g2.drawLine(65, 46, 72, 46);
+        }
+        u8g2.drawXBMP(51, 3, 26, 30, image_TimeSelect_bits);
+        break;
+    case 2:
+        if (upButtonTap())
+        {
+            tseconds = min(tseconds + 1, 59);
+        }
+        if (downButtonTap())
+        {
+            tseconds = max(tseconds - 1, 0);
+        }
+        if (arrowBlink < arrowBlinkDelay / 2)
+        {
             break;
-        case 4:
-            if(rightButtonTap())
-            {
-                clockMode = TIMER;
-                startTimer(tduration, trepeats);
-                resetTimer();
-                break;
-            }
-            if (arrowBlink < arrowBlinkDelay / 2)
-            {
-                break;
-            }
-            u8g2.drawXBMP(86, 49, 36, 12, image_Begin_Select_bits);
+        }
+        if (arrowBlink < arrowBlinkDelay / 2)
+        {
             break;
-        default:
+        }
+        u8g2.drawXBMP(87, 3, 26, 30, image_TimeSelect_bits);
+        break;
+    case 3:
+        if (trepeats < 10)
+        {
+            if (upButtonTap())
+            {
+                trepeats = min(trepeats + 1, 10000);
+            }
+            if (downButtonTap())
+            {
+                trepeats = max(trepeats - 1, 0);
+            }
+        }
+        else
+        {
+            if (upButtonHold())
+            {
+                trepeats = min(trepeats + 1, 10000);
+            }
+            if (downButtonHold())
+            {
+                trepeats = max(trepeats - 1, 0);
+            }
+        }
+        if (arrowBlink < arrowBlinkDelay / 2)
+        {
             break;
+        }
+        u8g2.drawLine(65, 46, 72, 46);
+        break;
+    case 4:
+        if (rightButtonTap())
+        {
+            clockMode = TIMER;
+            startTimer(tduration, trepeats);
+            resetTimer();
+            break;
+        }
+        if (arrowBlink < arrowBlinkDelay / 2)
+        {
+            break;
+        }
+        u8g2.drawXBMP(86, 49, 36, 12, image_Begin_Select_bits);
+        break;
+    default:
+        break;
     }
     String hoursStr = (thours < 10) ? "0" + String(thours) : String(thours);
     String minutesStr = (tminutes < 10) ? "0" + String(tminutes) : String(tminutes);
@@ -414,7 +433,7 @@ void timerSettings(void) {
     // Layer 3
     u8g2.setFont(u8g2_font_profont11_tr);
     u8g2.drawStr(66, 44, repeatsString.c_str());
-    
+
     // Layer 3
     u8g2.setDrawColor(1);
     u8g2.drawStr(15, 44, "Repeats:");
@@ -424,36 +443,51 @@ void timerSettings(void) {
 
 void clockFunc(int resetState = 0)
 {
+    if (leftButtonTap())
+    {
+        if (clockMode == REALTIME)
+        {
+            clockMode = NONE;
+        }
+        else
+        {
+            clockMode = REALTIME;
+        }
+    }
     arrowBlink = (arrowBlink + 1) % arrowBlinkDelay;
     if (resetState == 1)
     {
         clockMode = NONE;
         return;
     }
-    
+
     switch (clockMode)
     {
-        case TIMER:
+    case TIMER:
         Timer();
         return;
         break;
-        case TIMER_SETTING:
+    case TIMER_SETTING:
         timerSettings();
         return;
         break;
-        case STOPWATCH:
+    case STOPWATCH:
         Stopwatch();
         return;
         break;
-        case POMODORO:
+    case POMODORO:
         Pomodoro(pFperiod, pBperiod, pCycles);
         return;
         break;
-        case POMODORO_SETTING:
+    case POMODORO_SETTING:
         pomodoroSettings();
         return;
         break;
-        default:
+    case REALTIME:
+        showStats();
+        return;
+        break;
+    default:
         clockMenu();
         break;
     }

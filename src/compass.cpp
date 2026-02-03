@@ -1,14 +1,13 @@
 #include <Arduino.h>
-#include <U8g2lib.h> // u8g2 library is used to draw graphics on the OLED display
-#include <Wire.h>    // library required for IIC communication
+#include <U8g2lib.h>
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
 #pragma region Icons
 
-static const unsigned char image_download_1_bits[] U8X8_PROGMEM = {0x04,0x02,0x7f,0x02,0x04};
-static const unsigned char image_download_2_bits[] U8X8_PROGMEM = {0x10,0x20,0x7f,0x20,0x10};
-static const unsigned char image_download_bits[] U8X8_PROGMEM = {0x04,0x04,0x04,0x04,0x15,0x0e,0x04};
+static const unsigned char image_download_1_bits[] U8X8_PROGMEM = {0x04, 0x02, 0x7f, 0x02, 0x04};
+static const unsigned char image_download_2_bits[] U8X8_PROGMEM = {0x10, 0x20, 0x7f, 0x20, 0x10};
+static const unsigned char image_download_bits[] U8X8_PROGMEM = {0x04, 0x04, 0x04, 0x04, 0x15, 0x0e, 0x04};
 
 // 'img_bubble_fill', 26x13px
 const unsigned char epd_bitmap_img_bubble_fill[] PROGMEM = {
@@ -187,7 +186,6 @@ const unsigned char epd_bitmap_315_letter_nw_3[] PROGMEM = {
     0xc3, 0xc3, 0xf1, 0x00, 0xc3, 0xc3, 0x71, 0x00, 0x83, 0xc3, 0x71, 0x00, 0x03, 0xc3, 0x71, 0x00};
 
 #pragma endregion
-// Array of all bitmaps for convenience. (Total bytes used to store images in PROGMEM = 2048)
 const int epd_bitmap_allArray_LEN = 32;
 const unsigned char *character_bitmaps[32] = {
     epd_bitmap_000_letter_n_0,
@@ -224,47 +222,55 @@ const unsigned char *character_bitmaps[32] = {
     epd_bitmap_315_letter_nw_3};
 
 #pragma region "Compass Variables"
-int compass_degrees;  // 0-360° -- compass heading, for now, this value is taken from the potentiometer value
-char buffer[20];      // helper buffer for displaying strings on the display
-int xpos_offset;      // x offset of all the tickmarks
-int xpos_with_offset; // x position of the tickmark with applied offset
-float xpos_final;     // final x position for the tickmark
-int str_width;        // calculated width of the string
+int compass_degrees;
+char buffer[20];
+int xpos_offset;
+int xpos_with_offset;
+float xpos_final;
+int str_width;
 
-int labels_count = 3;      // number of different images for every label (for example, "SW"), 3 = total of 4 images per label
-int label_display = 0;     // which label version to display for the current big tickmark
-int SHOW_SCALED_LABEL = 1; // should we show the scaled label (drawn using image) or the standard non-scaled label (drawn using the u8g2 font)
+int labels_count = 3;
+int label_display = 0;
+int SHOW_SCALED_LABEL = 1;
 
-char compass_labels[][4] = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"}; // array with strings for big tickmarks
+char compass_labels[][4] = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
 
 #pragma endregion
 
-
-RTC_DATA_ATTR int autoCompass = 0; // should the compass auto rotate
-void compass(int offset, int autoRotate){
-    if(autoRotate == 1 && autoCompass == 0){
+RTC_DATA_ATTR int autoCompass = 0;
+void compass(int offset, int autoRotate)
+{
+    if (autoRotate == 1 && autoCompass == 0)
+    {
         autoCompass = 1;
-    }else if(autoRotate == 1 && autoCompass == 1){
+    }
+    else if (autoRotate == 1 && autoCompass == 1)
+    {
         autoCompass = 0;
     }
-    if(autoCompass == 1){
-        compass_degrees += 1; 
+    if (autoCompass == 1)
+    {
+        compass_degrees += 1;
     }
-    else{
+    else
+    {
         compass_degrees += offset * 2;
     }
-    if(compass_degrees > 360){
+    if (compass_degrees > 360)
+    {
         compass_degrees = 0;
-    }else if(compass_degrees < 0){
+    }
+    else if (compass_degrees < 0)
+    {
         compass_degrees = 360;
     }
 
-    compass_degrees = constrain(compass_degrees, 0, 360);         // constrain the value to be between 0-360°
-    xpos_offset = round((360 - compass_degrees) / 360.0 * 240.0); // calculate the X offset for all the tickmarks, max offset is 10(px)*24(tickmarks) = 240px
+    compass_degrees = constrain(compass_degrees, 0, 360);
+    xpos_offset = round((360 - compass_degrees) / 360.0 * 240.0);
 
-    u8g2.clearBuffer();    // clear the internal memory
-    u8g2.setDrawColor(1);  // set the drawing color to white
-    u8g2.setBitmapMode(1); // draw transparent images
+    u8g2.clearBuffer();
+    u8g2.setDrawColor(1);
+    u8g2.setBitmapMode(1);
 
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
@@ -280,76 +286,74 @@ void compass(int offset, int autoRotate){
     u8g2.drawStr(28, 47, "-Move Compass");
 
     for (int i = 0; i < 24; i++)
-    { // go over all 24 tickmarks
+    {
 
-        xpos_with_offset = (64 + (i * 10) + xpos_offset) % 240; // calculate the x offset for all tickmarks, do not go over 240px
+        xpos_with_offset = (64 + (i * 10) + xpos_offset) % 240;
 
         if (xpos_with_offset > 2 && xpos_with_offset < 128)
-        { // only draw tickmarks that are inside the visible area (display width is 128px)
+        {
 
-            // adjust the position using the power function
             if (xpos_with_offset < 64)
             {
-                xpos_final = xpos_with_offset / 64.0;                   // convert 0-64 into 0-1 range to work nicely with the power function
-                xpos_final = pow(xpos_final, 2.5);                      // add easing by having the power function, tweak the exponent for different result
-                label_display = round(xpos_final * 1.0 * labels_count); // calculate which scaled label to show based on the x position
-                xpos_final = xpos_final * 64.0;                         // convert 0-1 back into 0-64 (left side of the screen)
+                xpos_final = xpos_with_offset / 64.0;
+                xpos_final = pow(xpos_final, 2.5);
+                label_display = round(xpos_final * 1.0 * labels_count);
+                xpos_final = xpos_final * 64.0;
             }
             else
             {
-                xpos_final = (128 - xpos_with_offset) / 64.0;           // convert 0-64 into 0-1 range to work nicely with the power function
-                xpos_final = pow(xpos_final, 2.5);                      // add easing by having the power function, tweak the exponent for different result
-                label_display = round(xpos_final * 1.0 * labels_count); // calculate which scaled label to show based on the x position
-                xpos_final = (64 - (xpos_final * 64.0)) + 64;           // convert 1-0 back into 64-128 (right side of the screen)
+                xpos_final = (128 - xpos_with_offset) / 64.0;
+                xpos_final = pow(xpos_final, 2.5);
+                label_display = round(xpos_final * 1.0 * labels_count);
+                xpos_final = (64 - (xpos_final * 64.0)) + 64;
             }
 
-            xpos_final = round(xpos_final); // round the final x position to integer value
+            xpos_final = round(xpos_final);
 
             if (i % 3 == 0)
-            {                                                 // if the tickmark number is divisible by 3 == this is the big tickmark, show also the label
-                u8g2.drawLine(xpos_final, 7, xpos_final, 15); // draw big tickmark line
+            {
+                u8g2.drawLine(xpos_final, 7, xpos_final, 15);
 
-                // draw either scaled labels (images) or standard labels (u8g2 font)
                 if (SHOW_SCALED_LABEL == 0)
-                {                                                                        // standard label
-                    str_width = u8g2.getStrWidth(compass_labels[i / 3]);                 // calculate the string width
-                    u8g2.drawStr(xpos_final - str_width / 2, 24, compass_labels[i / 3]); // draw string
+                {
+                    str_width = u8g2.getStrWidth(compass_labels[i / 3]);
+                    u8g2.drawStr(xpos_final - str_width / 2, 24, compass_labels[i / 3]);
                 }
                 else
-                {                                                                      // scaled label
-                    int bitmap_index = ((i / 3) * (labels_count + 1)) + label_display; // which version of the image to display
-                    int label_xpos = xpos_final - (26 / 2);                            // all the images have the same width, the x pos could be easily calculated
+                {
+                    int bitmap_index = ((i / 3) * (labels_count + 1)) + label_display;
+                    int label_xpos = xpos_final - (26 / 2);
                     if (xpos_final > (0 + 3) && xpos_final < (128 - 3))
-                    { // only draw labels if the x position is in certain range
+                    {
                         u8g2.drawXBMP(label_xpos, 10 + 7, 26, 12, character_bitmaps[bitmap_index]);
                     }
                 }
 
                 if (label_display == labels_count)
-                { // if we are drawing the "widest" label, draw the tickmark as 2px line (instead of just 1px line)
+                {
                     u8g2.drawLine(xpos_final - 1, 7 + 0, xpos_final - 1, 7 + 8);
                 }
             }
             else
-            {                                                 // small tickmark without any label
-                u8g2.drawLine(xpos_final, 7, xpos_final, 13); // draw tickmark
+            {
+                u8g2.drawLine(xpos_final, 7, xpos_final, 13);
             }
         }
     }
 
-    u8g2.drawLine(0, 5, 127, 5); // draw horizontal line
+    u8g2.drawLine(0, 5, 127, 5);
     char buffer[10];
-    u8g2.setDrawColor(0);                                        // black color
-    u8g2.drawXBMP(51, 0, 26, 13, epd_bitmap_img_bubble_outline); // bubble outline
-    u8g2.setDrawColor(1);                                        // white color
-    u8g2.drawXBMP(51, 0, 26, 13, epd_bitmap_img_bubble_fill);    // bubble fill
+    u8g2.setDrawColor(0);
+    u8g2.drawXBMP(51, 0, 26, 13, epd_bitmap_img_bubble_outline);
+    u8g2.setDrawColor(1);
+    u8g2.drawXBMP(51, 0, 26, 13, epd_bitmap_img_bubble_fill);
 
-    u8g2.setDrawColor(0);                        // black color
-    u8g2.setFontDirection(0);                    // normal font direction
-    u8g2.setFont(u8g2_font_squeezed_b7_tr);      // set font
-    sprintf(buffer, "%d'", compass_degrees);     // convert compass degree integer to string, add the ' symbol that (somehow) looks like degree symbol (degree symbol is not present in the font)
-    str_width = u8g2.getStrWidth(buffer);        // calculate the string width
-    u8g2.drawStr(64 - str_width / 2, 8, buffer); // draw centered string
+    u8g2.setDrawColor(0);
+    u8g2.setFontDirection(0);
+    u8g2.setFont(u8g2_font_squeezed_b7_tr);
+    sprintf(buffer, "%d'", compass_degrees);
+    str_width = u8g2.getStrWidth(buffer);
+    u8g2.drawStr(64 - str_width / 2, 8, buffer);
 
-    u8g2.sendBuffer(); // transfer internal memory to the display
+    u8g2.sendBuffer();
 }

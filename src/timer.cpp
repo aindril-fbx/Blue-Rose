@@ -1,5 +1,4 @@
 #include <U8g2lib.h>
-#include <Wire.h>
 #include <Arduino.h>
 #include <clock.h>
 #include <buttonBehav.h>

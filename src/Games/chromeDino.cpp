@@ -1,5 +1,4 @@
 #include <U8g2lib.h>
-#include <Wire.h>
 #include <Arduino.h>
 #include <buttonBehav.h>
 #include <esp_random.h>

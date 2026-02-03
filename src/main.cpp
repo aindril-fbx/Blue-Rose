@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
-#include <Wire.h>
 #include <esp_sleep.h>
 #include <Preferences.h>
 #include "driver/gpio.h"
@@ -188,12 +187,10 @@ void loop(void)
         break;;
     
         case 2:
-            showStats();
-            //snakeGame(upButtonTap(), downButtonTap(), leftButtonTap(), rightButtonTap()); // display the snake game
+            snakeGame(upButtonTap(), downButtonTap(), leftButtonTap(), rightButtonTap()); // display the snake game
             if (selectButtonTap())
             {
                 currentScene = 0;        // if the select button is pressed, go back to the main menu
-                gotInfo = 0;
             }
         break;
     
@@ -238,6 +235,7 @@ void loop(void)
                     return;
                 }
                 clockFunc(1);
+                gotInfo = 0;
                 currentScene = 0;        // if the select button is pressed, go back to the main menu
             }
         break;

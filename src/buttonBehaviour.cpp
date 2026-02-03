@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <Wire.h>   
 
 extern int previousButtonPressed;
 extern int selectButtonPressed;

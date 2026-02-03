@@ -1,5 +1,4 @@
 #include <U8g2lib.h>
-#include <Wire.h> // library required for IIC communication
 #include <Arduino.h>
 #include <buttonBehav.h>
 #include <BleKeyboard.h>

@@ -13,6 +13,7 @@ enum ClockMode
     STOPWATCH,
     POMODORO,
     POMODORO_SETTING,
+    REALTIME,
     NONE
 };
 

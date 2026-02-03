@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <U8g2lib.h> // u8g2 library is used to draw graphics on the OLED display
-#include <Wire.h>    // library required for IIC communication
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
@@ -53,7 +52,7 @@ const unsigned char epd_bitmap__gamepad [] PROGMEM = {
 const unsigned char *Icons[numberOfItems] = {
     epd_bitmap__BackArrowIcon,
     epd_bitmap__CompassIcon,
-    epd_bitmap__clock,
+    epd_bitmap__SankeIcon,
     epd_bitmap__icon,
     epd_bitmap__LaptopIcon,
     epd_bitmap__Settings,
@@ -62,7 +61,7 @@ const unsigned char *Icons[numberOfItems] = {
 };
 
 const char Icon_Names[numberOfItems][20] = {
-    "Back", "Compass", "Real Time", "Button Test", "PC Control", "Settings", "Clock", "Games"};
+    "Back", "Compass", "Snake Game", "Button Test", "PC Control", "Settings", "Clock", "Games"};
 #pragma endregion
 
 #pragma region "MainMenuAnimation"
