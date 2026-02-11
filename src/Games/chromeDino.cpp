@@ -1517,6 +1517,7 @@ void Dino()
 		prefs.begin("Games", false);
 		HiScore = prefs.getInt("DinoScore", 0);
 		prefs.end();
+		delay(500);
 	}
 
 	u8g2.setDrawColor(0);

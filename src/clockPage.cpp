@@ -62,7 +62,10 @@ void clockMenu()
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
     // Layer 1
-    u8g2.drawXBMP(103, 10, 3, 5, image_download_1_bits);
+    if (arrowBlink > arrowBlinkDelay / 2)
+    {
+        u8g2.drawXBMP(103, 10, 3, 5, image_download_1_bits);
+    }
     u8g2.setFont(u8g2_font_6x10_tr);
     u8g2.drawStr(3, 10, "# CLOCK");
 

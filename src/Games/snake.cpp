@@ -1,84 +1,85 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include <buttonBehav.h>
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
-int snakeLength = 2;
-int *snakeX = new int[snakeLength];
-int *snakeY = new int[snakeLength];
-int gameStarted = 0;
-int direction[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-int directionIndex = 0;
+#pragma region "Sprites"
+static const unsigned char image_Body_bits[] U8X8_PROGMEM = {0x3c, 0x3c, 0xc3, 0xc3, 0xc3, 0xc3, 0x3c, 0x3c};
+static const unsigned char image_Food_bits[] U8X8_PROGMEM = {0x0f, 0x0f, 0x0f, 0x0f};
+static const unsigned char image_Head_bits[] U8X8_PROGMEM = {0x3c, 0x3c, 0xff, 0xff, 0xff, 0xff, 0x3c, 0x3c};
+#pragma endregion
 
-void snakeGame(int up, int down, int left, int right)
+const int maxLength = 128;
+int snake[maxLength][2] = {{2, 1}, {2, 2}, {2, 3}, {2, 4}, {2, 5}, {2, 6}};
+int currentLength = 6;
+int gameStarted = 0;
+int direction[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+int directionIndex = 2;
+
+bool initGrid = 0;
+
+bool isOpposite(int newDir, int currDir)
 {
-    if (snakeX[0] > 128 || snakeX[0] < 0 || snakeY[0] > 64 || snakeY[0] < 0)
-    {
-        snakeY[0] = (snakeY[0] + 64) % 64;
-    }
+    return (
+        direction[newDir][0] + direction[currDir][0] == 0 &&
+        direction[newDir][1] + direction[currDir][1] == 0);
+}
+
+void snakeGame()
+{
     u8g2.clearBuffer();
     u8g2.setDrawColor(1);
-    if (!gameStarted)
+
+    int changeDir = directionIndex;
+
+    if (upButtonTap())
+         changeDir = 0;
+    else if (rightButtonTap())
+         changeDir = 1;
+    else if (downButtonTap())
+         changeDir = 2;
+    else if (leftButtonTap())
+         changeDir = 3;
+
+    if (!isOpposite(changeDir, directionIndex))
     {
-        gameStarted = 1;
-        snakeX[0] = 64;
-        snakeY[0] = 32;
-        snakeX[1] = 64;
-        snakeY[1] = 33;
+        directionIndex =  changeDir;
     }
-    if (gameStarted)
+
+    static int posX = 0, posY = 0;
+    static unsigned long lastFrame = 0;
+    const unsigned long frameInterval = 200;
+    if (millis() - lastFrame >= frameInterval)
     {
-        for (int i = 0; i < snakeLength; i++)
+        lastFrame = millis();
+        for (int i = currentLength - 1; i > 0; i--)
         {
-            u8g2.drawBox(snakeX[i], snakeY[i], 2, 2);
-        }
-        for (int i = 0; i < snakeLength; i++)
-        {
-            int nextX = snakeX[i] + direction[directionIndex][0];
-            int nextY = snakeY[i] + direction[directionIndex][1];
-            int *snakeXtemp = new int[snakeLength];
-            int *snakeYtemp = new int[snakeLength];
-            for (int j = 0; j < snakeLength; j++)
-            {
-                snakeXtemp[j] = snakeX[j];
-            }
-            for (int j = 0; j < snakeLength; j++)
-            {
-                snakeYtemp[j] = snakeY[j];
-            }
-            free(snakeX); // free the old snake positions
-            free(snakeY);
-            snakeX = (int *)malloc(snakeLength * sizeof(int));
-            snakeY = (int *)malloc(snakeLength * sizeof(int));
-            if (i == 0)
-            {
-                snakeX[i] = nextX;
-                snakeY[i] = nextY;
-            }
-            else
-            {
-                snakeX[i] = snakeXtemp[i - 1];
-                snakeY[i] = snakeYtemp[i - 1];
-            }
-            free(snakeXtemp);
-            free(snakeYtemp);
+            snake[i][0] = snake[i - 1][0];
+            snake[i][1] = snake[i - 1][1];
         }
 
-        if (down)
+        snake[0][0] += direction[directionIndex][0];
+        snake[0][1] += direction[directionIndex][1];
+
+        if (snake[0][0] < 0)
+            snake[0][0] = 15;
+        if (snake[0][0] > 15)
+            snake[0][0] = 0;
+        if (snake[0][1] < 0)
+            snake[0][1] = 7;
+        if (snake[0][1] > 7)
+            snake[0][1] = 0;
+    }
+    for (int i = 0; i < currentLength; i++)
+    {
+        if (i == 0)
         {
-            directionIndex = 0;
+            u8g2.drawXBMP(snake[i][0] * 8, snake[i][1] * 8, 8, 8, image_Head_bits);
         }
-        else if (right)
+        else
         {
-            directionIndex = 1;
-        }
-        else if (up)
-        {
-            directionIndex = 2;
-        }
-        else if (left)
-        {
-            directionIndex = 3;
+            u8g2.drawXBMP(snake[i][0] * 8, snake[i][1] * 8, 8, 8, image_Body_bits);
         }
     }
 

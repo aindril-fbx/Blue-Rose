@@ -16,6 +16,7 @@
 #include <clock.h>
 #include <games.h>
 #include <stats.h>
+#include <faces.h>
 
 #include <BleKeyboard.h>
 
@@ -85,14 +86,14 @@ void setup(void)
         wokefromSleep = 0;
     }
 
-    pinMode(A0, INPUT);                  // set the analog input pin A0 as input
-    pinMode(upButton, INPUT_PULLUP);     // set button1 as input with pull-up resistor
-    pinMode(selectButton, INPUT_PULLUP); // set button2 as input with pull-up resistor
-    pinMode(downButton, INPUT_PULLUP);   // set button3 as input with pull-up resistor
-    pinMode(leftButton, INPUT_PULLUP);   // set button2 as input with pull-up resistor
-    pinMode(rightButton, INPUT_PULLUP);  // set button3 as input with pull-up resistor
+    pinMode(A0, INPUT);                 
+    pinMode(upButton, INPUT_PULLUP);    
+    pinMode(selectButton, INPUT_PULLUP);
+    pinMode(downButton, INPUT_PULLUP);  
+    pinMode(leftButton, INPUT_PULLUP);  
+    pinMode(rightButton, INPUT_PULLUP); 
 
-    innitIndices(); // initialize the indices for the menu items
+    innitIndices();
 
     Serial.println("Starting BLE work!");
     bleKeyboard.begin();
@@ -100,12 +101,13 @@ void setup(void)
     esp_sleep_wakeup_cause_t reason = esp_sleep_get_wakeup_cause();
 
     prefs.begin("settings", false);
-    maxAfkTime = prefs.getInt("SleepTime", 2000); // default to 2000 ms if not set
-    brightnessLevel = prefs.getInt("Brightness", 255); // default to 255 if not set
+    maxAfkTime = prefs.getInt("SleepTime", 2000);
+    brightnessLevel = prefs.getInt("Brightness", 255);
     sleepBarValue = maxAfkTime / 100;
     brightnessBarValue = (brightnessLevel * 61) / 255;
     prefs.end();
 
+    syncTimeAsync();
     u8g2.setContrast(brightnessLevel);
 }
 
@@ -140,15 +142,7 @@ void loop(void)
     if(afkTime >= maxAfkTime){
         sleepScreen();
         btStop();
-        #if CONFIG_IDF_TARGET_ESP32
-            // Classic ESP32
-            esp_sleep_enable_ext0_wakeup((gpio_num_t)33, 0);
-            
-        #elif CONFIG_IDF_TARGET_ESP32C3
-            // ESP32-C3
-            gpio_wakeup_enable((gpio_num_t)9, GPIO_INTR_LOW_LEVEL);
-            esp_sleep_enable_gpio_wakeup();
-        #endif
+        esp_sleep_enable_ext0_wakeup((gpio_num_t)33, 0);
         u8g2.setPowerSave(1);
         delay(50);
         while (digitalRead(leftButton) == LOW) {
@@ -161,6 +155,13 @@ void loop(void)
 
     switch (currentScene)
     {
+        case -1:
+            faces();
+            if (selectButtonTap())
+            {
+                currentScene = 0; // if the select button is pressed, go back to the main menu
+            }
+        break;
         case 0:
             mainMenu(); // display the main menu
             if (upButtonTap())
@@ -169,6 +170,10 @@ void loop(void)
             }
             if (selectButtonTap())
             {
+                if(currentItemIndex == 0){
+                    currentScene = -1;
+                    return;
+                }
                 currentScene = currentItemIndex; // set the current scene to the selected item index
             }
             if (downButtonTap())
@@ -187,7 +192,7 @@ void loop(void)
         break;;
     
         case 2:
-            snakeGame(upButtonTap(), downButtonTap(), leftButtonTap(), rightButtonTap()); // display the snake game
+            snakeGame(); // display the snake game
             if (selectButtonTap())
             {
                 currentScene = 0;        // if the select button is pressed, go back to the main menu
@@ -250,4 +255,3 @@ void loop(void)
 
     }
 }
-

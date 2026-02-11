@@ -2233,7 +2233,7 @@ void wifiSetup(void *param)
     }
 
     baseEpoch = time(nullptr);
-    baseRtcUs = esp_timer_get_time();
+    baseRtcUs = millis();
 
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
@@ -2266,8 +2266,8 @@ void showStats()
         syncTimeAsync();
     }
 
-    uint64_t nowUs = esp_timer_get_time();
-    time_t now = baseEpoch + (nowUs - baseRtcUs) / 1000000;
+    uint64_t nowUs = millis();
+    time_t now = baseEpoch + (nowUs - baseRtcUs) / 1000;
 
     struct tm *t = localtime(&now);
     u8g2.clearBuffer();
