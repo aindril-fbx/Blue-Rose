@@ -446,17 +446,6 @@ void timerSettings(void)
 
 void clockFunc(int resetState = 0)
 {
-    if (leftButtonTap())
-    {
-        if (clockMode == REALTIME)
-        {
-            clockMode = NONE;
-        }
-        else
-        {
-            clockMode = REALTIME;
-        }
-    }
     arrowBlink = (arrowBlink + 1) % arrowBlinkDelay;
     if (resetState == 1)
     {
@@ -488,10 +477,18 @@ void clockFunc(int resetState = 0)
         break;
     case REALTIME:
         showStats();
+        if (leftButtonTap())
+        {
+            clockMode = NONE;
+        }
         return;
         break;
     default:
         clockMenu();
+        if(leftButtonTap())
+        {
+            clockMode = REALTIME;
+        }
         break;
     }
 }

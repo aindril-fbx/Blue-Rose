@@ -43,7 +43,7 @@ void Stopwatch() {
             startStopWatch();
         }
     }
-    if(downButtonTap()) {
+    if(leftButtonTap()) {
         resetStopwatch();
     }
     

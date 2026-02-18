@@ -2198,7 +2198,8 @@ const long gmtOffset_sec = 19800;
 const int daylightOffset_sec = 0;
 
 time_t baseEpoch = 0;
-uint64_t baseRtcUs = 0;
+time_t now = 0;
+time_t lastSyncEpoch = 0;
 
 bool gotInfo = 0;
 WiFiMulti wifiMulti;
@@ -2226,14 +2227,23 @@ void wifiSetup(void *param)
 
     struct tm timeinfo;
     baseEpoch = 0;
-    baseRtcUs = 0;
     while (!getLocalTime(&timeinfo))
     {
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 
     baseEpoch = time(nullptr);
-    baseRtcUs = millis();
+    now = baseEpoch;
+
+    time_t ntpNow = time(nullptr);
+
+    if (now != 0)
+    {
+        long drift = ntpNow - now; // seconds
+        now += drift;              // hard correction
+    }
+
+    lastSyncEpoch = ntpNow;
 
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
@@ -2266,8 +2276,12 @@ void showStats()
         syncTimeAsync();
     }
 
-    uint64_t nowUs = millis();
-    time_t now = baseEpoch + (nowUs - baseRtcUs) / 1000;
+    static unsigned long lastNowUs = millis();
+    if (millis() - lastNowUs >= 1000)
+    {
+        now += 1;
+        lastNowUs = millis();
+    }
 
     struct tm *t = localtime(&now);
     u8g2.clearBuffer();
@@ -2283,26 +2297,26 @@ void showStats()
     char day[15];
     strftime(day, sizeof(day), "%A,", t);
     u8g2.drawStr(36, 36, day);
-    
+
     // Calender
     u8g2.drawXBMP(3, 3, 30, 38, image_Calender_bits);
-    
+
     // Layer 7
     u8g2.setFont(u8g2_font_profont22_tr);
     char date[3];
     strftime(date, sizeof(date), "%d", t);
     u8g2.drawStr(7, 25, date);
-    
+
     u8g2.setFont(u8g2_font_6x13O_tr);
     char month[5];
     strftime(month, sizeof(month), "%b", t);
     u8g2.drawStr(9, 37, month);
-    
+
     // Layer 8
     char year[5];
     strftime(year, sizeof(year), "%Y", t);
     u8g2.drawStr(36, 22, year);
-    
+
     if (rightButtonTap())
     {
         locked = !locked;
@@ -2315,8 +2329,9 @@ void showStats()
     }
     u8g2.setFont(u8g2_font_profont22_tr);
     int w = u8g2.getStrWidth(timeStr);
-    if(wifiOn){
-        u8g2.drawXBMP(62,3,15,16,connectingIcon);
+    if (wifiOn)
+    {
+        u8g2.drawXBMP(62, 3, 15, 16, connectingIcon);
     }
     u8g2.drawStr(4, 59, timeStr);
     u8g2.sendBuffer();
