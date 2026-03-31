@@ -1478,13 +1478,13 @@ void Dino()
 		beginCactus = 0;
 	}
 
-	if (upButtonHold() && D_State == GROUNDED)
+	if ((upButtonHold() || leftButtonHold()) && D_State == GROUNDED)
 	{
 		vy = jumpvelocity;
 		D_State = JUMP;
 	}
 
-	if (upButtonTap() && D_State == DEFEAT)
+	if ((upButtonTap() || leftButtonTap()) && D_State == DEFEAT)
 	{
 		beginTime = millis();
 		beginCactus = 0;

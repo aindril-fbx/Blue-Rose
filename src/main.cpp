@@ -153,6 +153,8 @@ void loop(void)
         return;
     }
 
+    static long lastScroll = millis();
+    const long scrollDelay = 180;
     switch (currentScene)
     {
         case -1:
@@ -164,9 +166,10 @@ void loop(void)
         break;
         case 0:
             mainMenu(); // display the main menu
-            if (upButtonTap())
+            if (upButtonHold() && millis() - lastScroll > scrollDelay)
             {
                 previousItem(); // if the previous button is pressed, go to the previous item
+                lastScroll = millis();
             }
             if (selectButtonTap())
             {
@@ -176,9 +179,10 @@ void loop(void)
                 }
                 currentScene = currentItemIndex; // set the current scene to the selected item index
             }
-            if (downButtonTap())
+            if (downButtonHold() && millis() - lastScroll > scrollDelay)
             {
                 nextItem(); // if the next button is pressed, go to the next item
+                lastScroll = millis();
             }
         break;
             

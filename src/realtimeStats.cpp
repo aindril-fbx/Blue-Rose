@@ -5,6 +5,7 @@
 #include <buttonBehav.h>
 #include <time.h>
 #include <secrets.h>
+#include <esp_sntp.h>
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
@@ -2197,8 +2198,8 @@ static const unsigned char connectingIcon[] U8X8_PROGMEM = {0x00, 0x00, 0x00, 0x
 const long gmtOffset_sec = 19800;
 const int daylightOffset_sec = 0;
 
-time_t baseEpoch = 0;
-time_t now = 0;
+RTC_DATA_ATTR time_t baseEpoch = 0;
+RTC_DATA_ATTR time_t now = 0;
 time_t lastSyncEpoch = 0;
 
 bool gotInfo = 0;
@@ -2226,10 +2227,9 @@ void wifiSetup(void *param)
                "pool.ntp.org");
 
     struct tm timeinfo;
-    baseEpoch = 0;
-    while (!getLocalTime(&timeinfo))
+    while (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED)
     {
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 
     baseEpoch = time(nullptr);

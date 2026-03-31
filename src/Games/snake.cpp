@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <buttonBehav.h>
+#include <esp_random.h>
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
@@ -15,6 +16,7 @@ int snake[maxLength][2] = {{2, 1}, {2, 2}, {2, 3}, {2, 4}, {2, 5}, {2, 6}};
 int currentLength = 6;
 int gameStarted = 0;
 int direction[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+int foodPos[128][64];
 int directionIndex = 2;
 
 bool initGrid = 0;
@@ -70,6 +72,10 @@ void snakeGame()
             snake[0][1] = 7;
         if (snake[0][1] > 7)
             snake[0][1] = 0;
+
+        int r = esp_random() & 100;
+        
+    
     }
     for (int i = 0; i < currentLength; i++)
     {
