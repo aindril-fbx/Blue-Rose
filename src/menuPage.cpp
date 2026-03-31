@@ -3,7 +3,7 @@
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
-const int numberOfItems = 8; // number of items in the menu
+const int numberOfItems = 7; // number of items in the menu
 extern RTC_DATA_ATTR int currentItemIndex;
 extern int previousItemIndex;
 extern int nextItemIndex;
@@ -15,10 +15,6 @@ static const unsigned char image_Select_bits[] U8X8_PROGMEM =  {0xff,0xff,0xff,0
 const unsigned char epd_bitmap__BackArrowIcon[] PROGMEM = {
     0x00, 0x00, 0x00, 0x30, 0x00, 0x70, 0x00, 0xf0, 0x01, 0xf0, 0x03, 0xe0, 0x07, 0xc0, 0x0f, 0x80,
     0x07, 0xc0, 0x03, 0xe0, 0x01, 0xf0, 0x00, 0xf0, 0x00, 0x70, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00};
-// ' SankeIcon', 16x16px
-const unsigned char epd_bitmap__SankeIcon[] PROGMEM = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x07, 0xee, 0x0f, 0xee, 0x0c, 0x04, 0x0c, 0x00, 0x0c, 0x00,
-    0x0f, 0xf0, 0x07, 0xf8, 0x00, 0x18, 0x00, 0x18, 0x1f, 0xf8, 0x3f, 0xf0, 0x00, 0x00, 0x00, 0x00};
 // ' CompassIcon', 16x16px
 const unsigned char epd_bitmap__CompassIcon[] PROGMEM = {
     0x00, 0x00, 0x03, 0xc0, 0x1c, 0x38, 0x31, 0x8c, 0x20, 0x14, 0x40, 0x22, 0x40, 0x42, 0x51, 0x8a,
@@ -52,7 +48,6 @@ const unsigned char epd_bitmap__gamepad [] PROGMEM = {
 const unsigned char *Icons[numberOfItems] = {
     epd_bitmap__BackArrowIcon,
     epd_bitmap__CompassIcon,
-    epd_bitmap__SankeIcon,
     epd_bitmap__icon,
     epd_bitmap__LaptopIcon,
     epd_bitmap__Settings,
@@ -61,7 +56,7 @@ const unsigned char *Icons[numberOfItems] = {
 };
 
 const char Icon_Names[numberOfItems][20] = {
-    "Back", "Compass", "Snake Game", "Button Test", "PC Control", "Settings", "Clock", "Games"};
+    "Back", "Compass", "Button Test", "PC Control", "Settings", "Clock", "Games"};
 #pragma endregion
 
 #pragma region "MainMenuAnimation"

@@ -35,7 +35,7 @@ extern const int leftButton = 33;
 extern const int rightButton = 32;
 
 
-int currentItemIndex = 0; // current item index in the menu
+RTC_DATA_ATTR int currentItemIndex = 0; // current item index in the menu
 int previousItemIndex;    // previous item index in the menu
 int nextItemIndex;        // next item index in the menu
 
@@ -153,18 +153,18 @@ void loop(void)
         return;
     }
 
-    static long lastScroll = millis();
     const long scrollDelay = 180;
     switch (currentScene)
     {
         case -1:
-            faces();
-            if (selectButtonTap())
-            {
-                currentScene = 0; // if the select button is pressed, go back to the main menu
-            }
+        faces();
+        if (selectButtonTap())
+        {
+            currentScene = 0; // if the select button is pressed, go back to the main menu
+        }
         break;
         case 0:
+            static long lastScroll = millis();
             mainMenu(); // display the main menu
             if (upButtonHold() && millis() - lastScroll > scrollDelay)
             {
@@ -193,17 +193,9 @@ void loop(void)
             {
                 currentScene = 0; // if the select button is pressed, go back to the main menu
             }
-        break;;
-    
-        case 2:
-            snakeGame(); // display the snake game
-            if (selectButtonTap())
-            {
-                currentScene = 0;        // if the select button is pressed, go back to the main menu
-            }
         break;
     
-        case 3:
+        case 2:
             if (rightButtonHold())
             {
                 backTime += 1;
@@ -219,7 +211,7 @@ void loop(void)
             ButtonTest(backTime, backDelay);
         break;;
     
-        case 4:
+        case 3:
             PC_Control();
             if (selectButtonTap())
             {
@@ -227,7 +219,7 @@ void loop(void)
             }
         break;
 
-        case 5:
+        case 4:
             settingsPage();
             if (selectButtonTap())
             {
@@ -235,7 +227,7 @@ void loop(void)
             }
         break;
 
-        case 6:
+        case 5:
             clockFunc(0);
             if (selectButtonTap())
             {   
@@ -249,7 +241,7 @@ void loop(void)
             }
         break;
 
-        case 7:
+        case 6:
             gamesMenu(0);
             if(selectButtonTap()){
                 gamesMenu(1);
