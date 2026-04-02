@@ -320,16 +320,20 @@ void timerSettings(void)
     u8g2.setFont(u8g2_font_profont10_tr);
     u8g2.drawStr(89, 58, "BEGIN");
 
+    static long lastStep = millis();
+    long lastStepDelay = 100;
     switch (tsettingState)
     {
     case 0:
-        if (upButtonTap())
+        if (upButtonHold() && (millis() - lastStep > lastStepDelay))
         {
             thours = min(thours + 1, 99);
+            lastStep = millis();
         }
-        if (downButtonTap())
+        if (downButtonHold() && (millis() - lastStep > lastStepDelay))
         {
             thours = max(thours - 1, 0);
+            lastStep = millis();
         }
         if (arrowBlink < arrowBlinkDelay / 2)
         {
@@ -338,13 +342,15 @@ void timerSettings(void)
         u8g2.drawXBMP(15, 3, 26, 30, image_TimeSelect_bits);
         break;
     case 1:
-        if (upButtonTap())
+        if (upButtonHold() && (millis() - lastStep > lastStepDelay))
         {
             tminutes = min(tminutes + 1, 59);
+            lastStep = millis();
         }
-        if (downButtonTap())
+        if (downButtonHold() && (millis() - lastStep > lastStepDelay))
         {
             tminutes = max(tminutes - 1, 0);
+            lastStep = millis();
         }
         if (arrowBlink < arrowBlinkDelay / 2)
         {
@@ -357,13 +363,15 @@ void timerSettings(void)
         u8g2.drawXBMP(51, 3, 26, 30, image_TimeSelect_bits);
         break;
     case 2:
-        if (upButtonTap())
+        if (upButtonHold() && (millis() - lastStep > lastStepDelay))
         {
             tseconds = min(tseconds + 1, 59);
+            lastStep = millis();
         }
-        if (downButtonTap())
+        if (downButtonHold() && (millis() - lastStep > lastStepDelay))
         {
             tseconds = max(tseconds - 1, 0);
+            lastStep = millis();
         }
         if (arrowBlink < arrowBlinkDelay / 2)
         {
@@ -376,27 +384,15 @@ void timerSettings(void)
         u8g2.drawXBMP(87, 3, 26, 30, image_TimeSelect_bits);
         break;
     case 3:
-        if (trepeats < 10)
+        if (upButtonHold() && (millis() - lastStep > lastStepDelay/2))
         {
-            if (upButtonTap())
-            {
-                trepeats = min(trepeats + 1, 10000);
-            }
-            if (downButtonTap())
-            {
-                trepeats = max(trepeats - 1, 0);
-            }
+            trepeats = min(trepeats + 1, 10000);
+            lastStep = millis();
         }
-        else
+        if (downButtonHold() && (millis() - lastStep > lastStepDelay/2))
         {
-            if (upButtonHold())
-            {
-                trepeats = min(trepeats + 1, 10000);
-            }
-            if (downButtonHold())
-            {
-                trepeats = max(trepeats - 1, 0);
-            }
+            trepeats = max(trepeats - 1, 0);
+            lastStep = millis();
         }
         if (arrowBlink < arrowBlinkDelay / 2)
         {
@@ -485,7 +481,7 @@ void clockFunc(int resetState = 0)
         break;
     default:
         clockMenu();
-        if(leftButtonTap())
+        if (leftButtonTap())
         {
             clockMode = REALTIME;
         }

@@ -17,11 +17,12 @@ const unsigned char epd_bitmap__SankeIcon[] PROGMEM = {
 #pragma endregion
 
 const int maxLength = 128;
-int snake[maxLength][2] = {{2, 6}, {2, 5}, {2, 4}, {2, 3}, {2, 2}, {2, 1}};
-int currentLength = 6;
+int snake[maxLength][2] = {{2, 6}, {2, 5}};
+int currentLength = 2;
 int gameStarted = 0;
 int direction[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
-int foodPos[128][64];
+int foodPos[10][2];
+int foodIndex = -1;
 int directionIndex = 2;
 
 bool initGrid = 0;
@@ -33,25 +34,27 @@ bool isOpposite(int newDir, int currDir)
         direction[newDir][1] + direction[currDir][1] == 0);
 }
 
+bool snakeStarted = true;
 void snakeGame()
 {
+    if(!snakeStarted) return;
     u8g2.clearBuffer();
     u8g2.setDrawColor(1);
 
     int changeDir = directionIndex;
 
     if (upButtonTap())
-         changeDir = 0;
+        changeDir = 0;
     else if (rightButtonTap())
-         changeDir = 1;
+        changeDir = 1;
     else if (downButtonTap())
-         changeDir = 2;
+        changeDir = 2;
     else if (leftButtonTap())
-         changeDir = 3;
+        changeDir = 3;
 
     if (!isOpposite(changeDir, directionIndex))
     {
-        directionIndex =  changeDir;
+        directionIndex = changeDir;
     }
 
     static int posX = 0, posY = 0;
@@ -78,9 +81,65 @@ void snakeGame()
         if (snake[0][1] > 7)
             snake[0][1] = 0;
 
-        int r = esp_random() & 100;
+        int foodSpawnX = esp_random() % 16;
+        int foodSpawnY = esp_random() % 8;
+
+        bool foodInside = true;
+        while(foodInside){
+            foodInside = false;
+            for (int i = 0; i < currentLength; i++)
+            {
+                if(foodSpawnX == snake[i][0] && foodSpawnY == snake[i][1]){
+                    foodInside = true;
+                    break;
+                }
+            }
+            for (int i = 0; i < foodIndex; i++)
+            {
+                if(foodSpawnX == foodPos[i][0] && foodSpawnY == foodPos[i][1]){
+                    foodInside = true;
+                    break;
+                }
+            }
+            if(!foodInside) break;
+            foodSpawnX = (foodSpawnX + 1)%16;
+            foodSpawnY = (foodSpawnY + 1)%8;
+        }
         
-    
+        for(int i = 0; i < currentLength; i++){
+            if(snake[0][0] == snake[i][0] && snake[0][1] == snake[i][1]){
+                snakeStarted = false;
+            }
+        }
+        if (foodIndex < 5)
+        {
+            foodPos[foodIndex][0] = foodSpawnX;
+            foodPos[foodIndex][1] = foodSpawnY;
+            foodIndex++;
+        }
+
+        for (int i = 0; i < foodIndex; i++)
+        {
+            if (snake[0][0] == foodPos[i][0] && snake[0][1] == foodPos[i][1])
+            {
+                for (int j = i; j < foodIndex; j++)
+                {
+                    foodPos[j][0] = foodPos[j+1][0];
+                    foodPos[j][1] = foodPos[j+1][1];
+                }
+                
+                currentLength++;
+                snake[currentLength-1][0] = snake[currentLength-2][0];
+                snake[currentLength-1][1] = snake[currentLength-2][1];
+                foodIndex--;
+                break;
+            }
+        }
+    }
+
+    for (int i = 0; i < foodIndex; i++)
+    {
+        u8g2.drawXBMP(foodPos[i][0] * 8 + 2, foodPos[i][1] * 8 + 2, 4, 4, image_Food_bits);
     }
     for (int i = 0; i < currentLength; i++)
     {
@@ -93,11 +152,12 @@ void snakeGame()
             u8g2.drawXBMP(snake[i][0] * 8, snake[i][1] * 8, 8, 8, image_Body_bits);
         }
     }
-    u8g2.drawFrame(0, 0, 128, 64);
+    // u8g2.drawFrame(0, 0, 128, 64);
     u8g2.sendBuffer();
 }
 
-void snakeCleanup(){
+void snakeCleanup()
+{
     currentLength = 6;
     gameStarted = 0;
     foodPos;
@@ -106,13 +166,13 @@ void snakeCleanup(){
     for (int i = 0; i < currentLength; i++)
     {
         snake[i][0] = 2;
-        snake[i][1] = currentLength-i;
+        snake[i][1] = currentLength - i;
     }
-    
 }
 
 Game snakeG = {
-    "SNAKE", "GAME",
+    "SNAKE",
+    "GAME",
     epd_bitmap__SankeIcon,
     snakeGame,
     snakeGame,

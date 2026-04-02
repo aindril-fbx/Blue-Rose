@@ -22,7 +22,7 @@ int brightnessBarValue = 255;
 int bluetoothSetting = 1; // 0 = OFF, 1 = ON
 int saveValue = 0;
 
-static const unsigned char image_arrow_bits[] U8X8_PROGMEM = {0x08,0x0c,0x0e,0x0f,0x0e,0x0c,0x08};
+static const unsigned char image_arrow_bits[] U8X8_PROGMEM = {0x01, 0x03, 0x07, 0x03, 0x01};
 static const unsigned char image_save_bits[] U8X8_PROGMEM = {0xfe,0xff,0x7f,0x01,0x00,0x80,0x01,0x00,0x80,0x31,0x97,0x8c,0x89,0x94,0x92,0x91,0x94,0x9e,0xa1,0x94,0x82,0x19,0x67,0x8c,0x01,0x00,0x80,0x01,0x00,0x80,0xfe,0xff,0x7f};
 static const unsigned char image_download_bits[] U8X8_PROGMEM = {0x28,0x28,0x7e,0x14,0x3f,0x0a,0x0a};
 static const unsigned char image_saveSelected_bits[] U8X8_PROGMEM = {0xfe,0xff,0x7f,0xff,0xff,0xff,0xff,0xff,0xff,0xcf,0x68,0xf3,0x77,0x6b,0xed,0x6f,0x6b,0xe1,0x5f,0x6b,0xfd,0xe7,0x98,0xf3,0xff,0xff,0xff,0xff,0xff,0xff,0xfe,0xff,0x7f};
@@ -167,19 +167,19 @@ void settingsPage(void) {
     {
     case 0:
         changeBluetoothSetting();
-        u8g2.drawXBMP(120, 13, 4, 7, image_arrow_bits);
+        u8g2.drawXBMP(120, 15, 3, 5, image_arrow_bits);
         break;
-    case 1:
+    case 1:  
         changeSleepTimeSetting();
-        u8g2.drawXBMP(120, 26, 4, 7, image_arrow_bits);
+        u8g2.drawXBMP(120, 28, 3, 5, image_arrow_bits);
         break;
     case 2:
         changeBrightnessSetting();
-        u8g2.drawXBMP(120, 39, 4, 7, image_arrow_bits);
+        u8g2.drawXBMP(120, 41, 3, 5, image_arrow_bits);
         break;
     case 3:
         changeSaveSetting();
-        u8g2.drawXBMP(120, 52, 4, 7, image_arrow_bits);
+        u8g2.drawXBMP(120, 53, 3, 5, image_arrow_bits);
         break;
     default:
         changeBluetoothSetting();
