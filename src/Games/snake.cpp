@@ -17,15 +17,17 @@ const unsigned char epd_bitmap__SankeIcon[] PROGMEM = {
 #pragma endregion
 
 const int maxLength = 128;
-int snake[maxLength][2] = {{2, 6}, {2, 5}};
+int snake[maxLength][2] = {{2, 3}, {2, 2}};
 int currentLength = 2;
 int gameStarted = 0;
 int direction[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
-int foodPos[10][2];
+int foodPos[20][2];
 int foodIndex = -1;
-int directionIndex = 2;
+int directionIndex = 1;
 
 bool initGrid = 0;
+
+void snakeCleanup();
 
 bool isOpposite(int newDir, int currDir)
 {
@@ -35,9 +37,41 @@ bool isOpposite(int newDir, int currDir)
 }
 
 bool snakeStarted = true;
+
+extern int afkTime;
+bool won = false;
+void endScreen()
+{
+    u8g2.clearBuffer();
+    u8g2.setFontMode(1);
+    u8g2.setBitmapMode(1);
+    // string 1
+    u8g2.setFont(u8g2_font_6x13O_tr);
+
+    if (won)
+    {
+        u8g2.drawStr(40, 33, "YOU WIN!");
+    }
+    else
+    {
+        u8g2.drawStr(40, 33, "YOU LOSE!");
+    }
+
+    // string 2
+    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.drawStr(34, 53, "> to RESTART");
+
+    if (rightButtonHold() && !snakeStarted)
+    {
+        snakeCleanup();
+    }
+
+    u8g2.sendBuffer();
+}
+
 void snakeGame()
 {
-    if(!snakeStarted) return;
+    afkTime = 0;
     u8g2.clearBuffer();
     u8g2.setDrawColor(1);
 
@@ -60,7 +94,9 @@ void snakeGame()
     static int posX = 0, posY = 0;
     static unsigned long lastFrame = 0;
     const unsigned long frameInterval = 400;
-    if (millis() - lastFrame >= frameInterval)
+    if (!snakeStarted)
+        endScreen();
+    if (millis() - lastFrame >= frameInterval && snakeStarted)
     {
         lastFrame = millis();
         for (int i = currentLength - 1; i > 0; i--)
@@ -85,33 +121,49 @@ void snakeGame()
         int foodSpawnY = esp_random() % 8;
 
         bool foodInside = true;
-        while(foodInside){
+        int maxFood = 5;
+        while (foodInside && (maxLength - currentLength > maxFood))
+        {
             foodInside = false;
             for (int i = 0; i < currentLength; i++)
             {
-                if(foodSpawnX == snake[i][0] && foodSpawnY == snake[i][1]){
+                if (foodSpawnX == snake[i][0] && foodSpawnY == snake[i][1])
+                {
                     foodInside = true;
                     break;
                 }
             }
             for (int i = 0; i < foodIndex; i++)
             {
-                if(foodSpawnX == foodPos[i][0] && foodSpawnY == foodPos[i][1]){
+                if (foodSpawnX == foodPos[i][0] && foodSpawnY == foodPos[i][1])
+                {
                     foodInside = true;
                     break;
                 }
             }
-            if(!foodInside) break;
-            foodSpawnX = (foodSpawnX + 1)%16;
-            foodSpawnY = (foodSpawnY + 1)%8;
+            if (!foodInside)
+                break;
+            foodSpawnX = (foodSpawnX + 1) % 16;
+            if (foodSpawnX == 15)
+            {
+                foodSpawnY = (foodSpawnY + 1) % 8;
+            }
+            Serial.print(foodSpawnX);
+            Serial.print(" , ");
+            Serial.println(foodSpawnY);
         }
-        
-        for(int i = 0; i < currentLength; i++){
-            if(snake[0][0] == snake[i][0] && snake[0][1] == snake[i][1]){
+
+        for (int i = 1; i < currentLength; i++)
+        {
+            if (snake[0][0] == snake[i][0] && snake[0][1] == snake[i][1])
+            {
                 snakeStarted = false;
+                delay(500);
             }
         }
-        if (foodIndex < 5)
+        int tempMaxfood = (maxLength - currentLength > maxFood) ? maxFood : 2;
+        Serial.println(tempMaxfood);
+        if (foodIndex < tempMaxfood)
         {
             foodPos[foodIndex][0] = foodSpawnX;
             foodPos[foodIndex][1] = foodSpawnY;
@@ -124,45 +176,52 @@ void snakeGame()
             {
                 for (int j = i; j < foodIndex; j++)
                 {
-                    foodPos[j][0] = foodPos[j+1][0];
-                    foodPos[j][1] = foodPos[j+1][1];
+                    foodPos[j][0] = foodPos[j + 1][0];
+                    foodPos[j][1] = foodPos[j + 1][1];
                 }
-                
+
                 currentLength++;
-                snake[currentLength-1][0] = snake[currentLength-2][0];
-                snake[currentLength-1][1] = snake[currentLength-2][1];
+                snake[currentLength - 1][0] = snake[currentLength - 2][0];
+                snake[currentLength - 1][1] = snake[currentLength - 2][1];
                 foodIndex--;
                 break;
             }
         }
     }
-
-    for (int i = 0; i < foodIndex; i++)
-    {
-        u8g2.drawXBMP(foodPos[i][0] * 8 + 2, foodPos[i][1] * 8 + 2, 4, 4, image_Food_bits);
+    if(currentLength == maxLength){
+        snakeStarted = false;
+        won = true;
     }
-    for (int i = 0; i < currentLength; i++)
+    if (snakeStarted)
     {
-        if (i == 0)
+        for (int i = 0; i < foodIndex; i++)
         {
-            u8g2.drawXBMP(snake[i][0] * 8, snake[i][1] * 8, 8, 8, image_Head_bits);
+            u8g2.drawXBMP(foodPos[i][0] * 8 + 2, foodPos[i][1] * 8 + 2, 4, 4, image_Food_bits);
         }
-        else
+        for (int i = 0; i < currentLength; i++)
         {
-            u8g2.drawXBMP(snake[i][0] * 8, snake[i][1] * 8, 8, 8, image_Body_bits);
+            if (i == 0)
+            {
+                u8g2.drawXBMP(snake[i][0] * 8, snake[i][1] * 8, 8, 8, image_Head_bits);
+            }
+            else
+            {
+                u8g2.drawXBMP(snake[i][0] * 8, snake[i][1] * 8, 8, 8, image_Body_bits);
+            }
         }
+        // u8g2.drawFrame(0, 0, 128, 64);
+        u8g2.sendBuffer();
     }
-    // u8g2.drawFrame(0, 0, 128, 64);
-    u8g2.sendBuffer();
 }
 
 void snakeCleanup()
 {
-    currentLength = 6;
-    gameStarted = 0;
+    currentLength = 2;
+    snakeStarted = true;
     foodPos;
-    directionIndex = 2;
+    directionIndex = 1;
     initGrid = 0;
+    foodIndex = -1;
     for (int i = 0; i < currentLength; i++)
     {
         snake[i][0] = 2;
