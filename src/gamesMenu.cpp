@@ -91,7 +91,7 @@ void gamesMenu(int reset = 0)
     }
 
     // DinoIcon
-    u8g2.drawXBMP(69, 13, 48, 42, gameList[gameIndex]->Icon);
+    u8g2.drawXBMP(63, 3, 62, 58, gameList[gameIndex]->Icon);
 
     // arrows
     u8g2.drawXBMP(4, 56, 29, 4, image_arrows_bits);
