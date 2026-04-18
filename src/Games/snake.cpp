@@ -20,7 +20,7 @@ int currentLength = 2;
 int gameStarted = 0;
 int direction[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
 int foodPos[20][2];
-int foodIndex = -1;
+int foodIndex = 0;
 int directionIndex = 1;
 
 bool initGrid = 0;
@@ -186,8 +186,9 @@ void snakeGame()
             }
         }
     }
-    if (currentLength == maxLength - 1)
+    if (currentLength == (maxLength - 1) && snakeStarted)
     {
+        Serial.println("Won!");
         won = true;
         snakeStarted = false;
     }
@@ -217,10 +218,11 @@ void snakeCleanup()
 {
     currentLength = 2;
     snakeStarted = true;
+    won = false;
     foodPos;
     directionIndex = 1;
     initGrid = 0;
-    foodIndex = -1;
+    foodIndex = 0;
     for (int i = 0; i < currentLength; i++)
     {
         snake[i][0] = 2;

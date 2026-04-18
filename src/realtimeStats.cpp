@@ -2271,17 +2271,16 @@ void syncTimeAsync()
 
 void showStats()
 {
+    static unsigned long lastNowUs;
     if ((!wifiOn && baseEpoch == 0) || !gotInfo)
     {
         syncTimeAsync();
-    }
-
-    static unsigned long lastNowUs = millis();
-    if (millis() - lastNowUs >= 1000)
-    {
-        now += 1;
         lastNowUs = millis();
     }
+
+    unsigned long timeOffset = (millis() - lastNowUs)/1000;
+    static unsigned long nowCopy = now;
+    now = nowCopy + timeOffset;
 
     struct tm *t = localtime(&now);
     u8g2.clearBuffer();
