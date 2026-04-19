@@ -2205,6 +2205,8 @@ time_t lastSyncEpoch = 0;
 bool gotInfo = 0;
 WiFiMulti wifiMulti;
 bool wifiOn = 0;
+unsigned long nowCopy;
+unsigned long lastNowUs;
 void wifiSetup(void *param)
 {
     WiFi.mode(WIFI_STA);
@@ -2230,10 +2232,13 @@ void wifiSetup(void *param)
     while (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED)
     {
         vTaskDelay(pdMS_TO_TICKS(100));
+        
     }
 
     baseEpoch = time(nullptr);
     now = baseEpoch;
+    nowCopy = now;
+    lastNowUs = millis();
 
     time_t ntpNow = time(nullptr);
 
@@ -2271,15 +2276,12 @@ void syncTimeAsync()
 
 void showStats()
 {
-    static unsigned long lastNowUs;
     if ((!wifiOn && baseEpoch == 0) || !gotInfo)
     {
         syncTimeAsync();
-        lastNowUs = millis();
     }
 
     unsigned long timeOffset = (millis() - lastNowUs)/1000;
-    static unsigned long nowCopy = now;
     now = nowCopy + timeOffset;
 
     struct tm *t = localtime(&now);

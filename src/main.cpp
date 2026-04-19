@@ -17,6 +17,7 @@
 #include <games.h>
 #include <stats.h>
 #include <faces.h>
+#include <versionInfo.h>
 
 #include <BleKeyboard.h>
 
@@ -249,5 +250,11 @@ void loop(void)
             }
         break;
 
+        case 7:
+            version();
+            if(selectButtonTap()){
+                currentScene = 0;
+            }
+        break;
     }
 }

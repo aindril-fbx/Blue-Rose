@@ -3,7 +3,7 @@
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
-const int numberOfItems = 7; // number of items in the menu
+const int numberOfItems = 8; // number of items in the menu
 extern RTC_DATA_ATTR int currentItemIndex;
 extern int previousItemIndex;
 extern int nextItemIndex;
@@ -45,6 +45,11 @@ const unsigned char epd_bitmap__gamepad [] PROGMEM = {
 	0x7f, 0xfe, 0x7c, 0x3e, 0x78, 0x1e, 0x70, 0x0e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+const unsigned char epd_bitmap__VersionICON [] PROGMEM = {
+	0x00, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x0a, 0x00, 0x0e, 0x70, 0x04, 0x50, 0x04, 0x70, 0x04, 0x20, 
+	0x04, 0xe0, 0x07, 0x80, 0x04, 0x00, 0x0e, 0x00, 0x0a, 0x00, 0x0e, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
 const unsigned char *Icons[numberOfItems] = {
     epd_bitmap__BackArrowIcon,
     epd_bitmap__CompassIcon,
@@ -53,10 +58,11 @@ const unsigned char *Icons[numberOfItems] = {
     epd_bitmap__Settings,
     epd_bitmap__clock,
     epd_bitmap__gamepad,
+	epd_bitmap__VersionICON,
 };
 
 const char Icon_Names[numberOfItems][20] = {
-    "Back", "Compass", "Button Test", "PC Control", "Settings", "Clock", "Games"};
+    "Back", "Compass", "Button Test", "PC Control", "Settings", "Clock", "Games", "Version"};
 #pragma endregion
 
 #pragma region "MainMenuAnimation"
