@@ -25,24 +25,29 @@ void ButtonTest(int backValue, int maxBackValue)
     u8g2.drawXBMP(19, 9, 91, 53, image_Layer_6_bits);
 
     int connected = bleKeyboard.isConnected();
-    if (connected)
+    static unsigned long lastKeyStroke = millis();
+    if (connected && (millis() - lastKeyStroke > 200))
     {
         if(rightButtonTap()){
             bleKeyboard.press(KEY_RIGHT_ARROW);
             delay(50);
             bleKeyboard.releaseAll();
+            lastKeyStroke = millis();
         }else if(leftButtonTap()){
             bleKeyboard.press(KEY_LEFT_ARROW);
             delay(50);
             bleKeyboard.releaseAll();
+            lastKeyStroke = millis();
         }else if(downButtonTap()){
             bleKeyboard.press(KEY_DOWN_ARROW);
             delay(50);
             bleKeyboard.releaseAll();
+            lastKeyStroke = millis();
         }else if(upButtonTap()){
             bleKeyboard.press(KEY_UP_ARROW);
             delay(50);
             bleKeyboard.releaseAll();
+            lastKeyStroke = millis();
         }
     }
 
@@ -81,3 +86,4 @@ void ButtonTest(int backValue, int maxBackValue)
 
     u8g2.sendBuffer();
 }
+

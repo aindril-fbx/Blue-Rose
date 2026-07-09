@@ -141,14 +141,17 @@ void PC_Control(void)
         bleKeyboard.releaseAll();
         return;
     }
-    if (downButtonTap())
+    static unsigned long lastScroll = millis();
+    if (downButtonHold() && (millis() - lastScroll > 200))
     {
         nextApp();
+        lastScroll = millis();
     }
 
-    if (upButtonTap())
+    if (upButtonHold() && (millis() - lastScroll > 200))
     {
         previousApp();
+        lastScroll = millis();
     }
     // Layer 1
     u8g2.setFont(u8g2_font_5x7_tr);

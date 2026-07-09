@@ -9,4 +9,6 @@ extern bool gotInfo;
 void showStats();
 void syncTimeAsync();
 
+extern TaskHandle_t wifiTaskHandle;
+
 #endif

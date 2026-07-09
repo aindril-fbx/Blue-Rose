@@ -2207,6 +2207,8 @@ WiFiMulti wifiMulti;
 bool wifiOn = 0;
 unsigned long nowCopy;
 unsigned long lastNowUs;
+
+TaskHandle_t wifiTaskHandle = NULL;
 void wifiSetup(void *param)
 {
     WiFi.mode(WIFI_STA);
@@ -2253,6 +2255,7 @@ void wifiSetup(void *param)
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
     wifiOn = 0;
+    //demoMode(); // Uncomment this line to enter demo mode after starting the esp
     vTaskDelete(NULL);
 }
 
@@ -2270,7 +2273,7 @@ void syncTimeAsync()
         4096,
         NULL,
         1,
-        NULL);
+        &wifiTaskHandle);
     gotInfo = 1;
 }
 

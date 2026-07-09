@@ -3,7 +3,7 @@
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
-const int numberOfItems = 8; // number of items in the menu
+const int numberOfItems = 9; // number of items in the menu
 extern RTC_DATA_ATTR int currentItemIndex;
 extern int previousItemIndex;
 extern int nextItemIndex;
@@ -59,10 +59,11 @@ const unsigned char *Icons[numberOfItems] = {
     epd_bitmap__clock,
     epd_bitmap__gamepad,
 	epd_bitmap__VersionICON,
+	epd_bitmap__LaptopIcon,
 };
 
 const char Icon_Names[numberOfItems][20] = {
-    "Back", "Compass", "Button Test", "PC Control", "Settings", "Clock", "Games", "Version"};
+    "Back", "Compass", "Button Test", "PC Control", "Settings", "Clock", "Games", "Version", "Text Screen"};
 #pragma endregion
 
 #pragma region "MainMenuAnimation"

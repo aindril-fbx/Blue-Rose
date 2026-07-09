@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+void playBuzzer(bool);
+
 int selectButtonTap();
 int selectButtonHold();
 
@@ -21,5 +23,7 @@ int rightButtonHold();
 void resetButtonStates();
 
 int anyButtonHold();
+
+void demoMode();
 
 #endif

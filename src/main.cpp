@@ -18,6 +18,9 @@
 #include <stats.h>
 #include <faces.h>
 #include <versionInfo.h>
+#include <textScreen.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 
 #include <BleKeyboard.h>
 
@@ -34,6 +37,7 @@ extern const int upButton = 19;
 extern const int downButton = 18;
 extern const int leftButton = 33;
 extern const int rightButton = 32;
+extern const int buzzerPin = 27;
 
 
 RTC_DATA_ATTR int currentItemIndex = 0; // current item index in the menu
@@ -58,13 +62,10 @@ static const unsigned char coolBar[] U8X8_PROGMEM = {0x00,0x00,0x00,0x00,0xf8,0x
 #pragma endregion
 
 void wokeFromSleepScreen(void) {
-    u8g2.clearBuffer();
-    u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
 
     for(int i = -101; i<= 148; i+=16){
         u8g2.clearBuffer();
-        u8g2.setBitmapMode(1);
         u8g2.drawXBMP(i, 0, 81, 64, coolBar);
         u8g2.sendBuffer();
     }
@@ -86,17 +87,19 @@ void setup(void)
         wokeFromSleepScreen();
         wokefromSleep = 0;
     }
-
+    //WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
     pinMode(A0, INPUT);                 
     pinMode(upButton, INPUT_PULLUP);    
     pinMode(selectButton, INPUT_PULLUP);
     pinMode(downButton, INPUT_PULLUP);  
     pinMode(leftButton, INPUT_PULLUP);  
     pinMode(rightButton, INPUT_PULLUP); 
+    pinMode(buzzerPin, OUTPUT);
 
     innitIndices();
 
     Serial.println("Starting BLE work!");
+    delay(100);
     bleKeyboard.begin();
 
     esp_sleep_wakeup_cause_t reason = esp_sleep_get_wakeup_cause();
@@ -108,6 +111,7 @@ void setup(void)
     brightnessBarValue = (brightnessLevel * 61) / 255;
     prefs.end();
 
+    delay(100);
     syncTimeAsync();
     u8g2.setContrast(brightnessLevel);
 }
@@ -130,8 +134,52 @@ void sleepScreen(void) {
 int backDelay = 100;
 int backTime = 0;
 
+bool buzzerOn = false;
+bool lastHeld = false;
+unsigned long buzzerTimer = 0;
+
+const unsigned long BEEP_TIME = 50;
+const unsigned long BEEP_DELAY = 115;
+
+void updateBuzzer()
+{
+    bool held = anyButtonHold();
+
+    // Detect button press
+    if (held && !lastHeld && !buzzerOn)
+    {
+        playBuzzer(true);
+        buzzerOn = true;
+        buzzerTimer = millis();
+    }
+
+    if (buzzerOn)
+    {
+        // Finish current beep
+        if (millis() - buzzerTimer >= BEEP_TIME)
+        {
+            playBuzzer(false);
+            buzzerOn = false;
+            buzzerTimer = millis();
+        }
+    }
+    else if (held)
+    {
+        // Start another beep after the delay
+        if (millis() - buzzerTimer >= BEEP_DELAY)
+        {
+            playBuzzer(true);
+            buzzerOn = true;
+            buzzerTimer = millis();
+        }
+    }
+
+    lastHeld = held;
+}
+
 void loop(void)
 {
+    updateBuzzer();
     resetButtonStates();
 
     if(anyButtonHold()){
@@ -252,6 +300,12 @@ void loop(void)
 
         case 7:
             version();
+            if(selectButtonTap()){
+                currentScene = 0;
+            }
+        break;
+        case 8:
+            drawTextScreen();
             if(selectButtonTap()){
                 currentScene = 0;
             }
