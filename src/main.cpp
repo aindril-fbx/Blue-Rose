@@ -32,10 +32,10 @@ BleKeyboard bleKeyboard;
 Preferences prefs;
 
 
-extern const int selectButton = 4;
-extern const int upButton = 19;
-extern const int downButton = 18;
-extern const int leftButton = 33;
+extern const int selectButton = 33;
+extern const int upButton = 18;
+extern const int downButton = 19;
+extern const int leftButton = 4;
 extern const int rightButton = 32;
 extern const int buzzerPin = 27;
 
@@ -76,6 +76,7 @@ void wokeFromSleepScreen(void) {
 
 RTC_DATA_ATTR int maxAfkTime = 2000; // maximum AFK time in milliseconds
 int afkTime = 0;        // current AFK time in milliseconds
+int soundSetting = 1;
 
 void setup(void)
 {
@@ -107,6 +108,7 @@ void setup(void)
     prefs.begin("settings", false);
     maxAfkTime = prefs.getInt("SleepTime", 2000);
     brightnessLevel = prefs.getInt("Brightness", 255);
+    soundSetting = prefs.getInt("Sound", 0);
     sleepBarValue = maxAfkTime / 100;
     brightnessBarValue = (brightnessLevel * 61) / 255;
     prefs.end();
@@ -139,7 +141,8 @@ bool lastHeld = false;
 unsigned long buzzerTimer = 0;
 
 const unsigned long BEEP_TIME = 50;
-const unsigned long BEEP_DELAY = 115;
+const unsigned long scrollDelay = 180;
+const unsigned long BEEP_DELAY = scrollDelay - BEEP_TIME;
 
 void updateBuzzer()
 {
@@ -177,6 +180,10 @@ void updateBuzzer()
     lastHeld = held;
 }
 
+void backtoMenu(void){
+    currentScene = 0;
+}
+
 void loop(void)
 {
     updateBuzzer();
@@ -202,7 +209,6 @@ void loop(void)
         return;
     }
 
-    const long scrollDelay = 180;
     switch (currentScene)
     {
         case -1:
@@ -292,10 +298,10 @@ void loop(void)
 
         case 6:
             gamesMenu(0);
-            if(selectButtonTap()){
-                gamesMenu(1);
-                currentScene = 0;
-            }
+            // if(selectButtonTap()){
+            //     gamesMenu(1);
+            //     currentScene = 0;
+            // }
         break;
 
         case 7:

@@ -14,8 +14,9 @@ bool leftButtonOverride = false;
 bool rightButtonOverride = false;
 
 extern const int buzzerPin;
+extern int soundSetting;
 void playBuzzer(bool yes){
-    if(yes){
+    if(yes && soundSetting){
         digitalWrite(buzzerPin, HIGH);
     }else{
         digitalWrite(buzzerPin, LOW);

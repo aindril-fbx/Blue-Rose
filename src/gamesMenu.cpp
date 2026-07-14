@@ -26,6 +26,7 @@ void cleanUpGames(){
     
 }
 
+extern void backtoMenu(void);
 void gamesMenu(int reset = 0)
 {
 
@@ -33,11 +34,6 @@ void gamesMenu(int reset = 0)
     {
         gameMode = 0;
         cleanUpGames();
-        return;
-    }
-    
-    if(selectButtonTap()){
-        gameMode = 0;
     }
 
     if (gameMode)
@@ -55,6 +51,9 @@ void gamesMenu(int reset = 0)
             lastStep = millis();
         }else if(rightButtonTap()){
             gameMode = 1;
+        }
+        if(selectButtonTap()){
+            backtoMenu();
         }
     }
 

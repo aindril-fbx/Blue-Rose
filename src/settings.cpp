@@ -13,13 +13,13 @@ extern Preferences prefs;
 
 extern int maxAfkTime;
 extern int brightnessLevel;
+extern int soundSetting;
 
 int numOfSettingsOptions = 4;
 int currentSettingIndex = 0;
 
 int sleepBarValue = 2;
 int brightnessBarValue = 255;
-int bluetoothSetting = 1; // 0 = OFF, 1 = ON
 int saveValue = 0;
 
 static const unsigned char image_arrow_bits[] U8X8_PROGMEM = {0x01, 0x03, 0x07, 0x03, 0x01};
@@ -27,12 +27,12 @@ static const unsigned char image_save_bits[] U8X8_PROGMEM = {0xfe,0xff,0x7f,0x01
 static const unsigned char image_download_bits[] U8X8_PROGMEM = {0x28,0x28,0x7e,0x14,0x3f,0x0a,0x0a};
 static const unsigned char image_saveSelected_bits[] U8X8_PROGMEM = {0xfe,0xff,0x7f,0xff,0xff,0xff,0xff,0xff,0xff,0xcf,0x68,0xf3,0x77,0x6b,0xed,0x6f,0x6b,0xe1,0x5f,0x6b,0xfd,0xe7,0x98,0xf3,0xff,0xff,0xff,0xff,0xff,0xff,0xfe,0xff,0x7f};
 
-void changeBluetoothSetting()
+void changeSoundSetting()
 {
     if(rightButtonTap() || leftButtonTap()){
-        bluetoothSetting = (bluetoothSetting + 1) % 2;
+        soundSetting = (soundSetting + 1) % 2;
     }
-    bluetoothSetting = constrain(bluetoothSetting, 0, 1);
+    soundSetting = constrain(soundSetting, 0, 1);
     return;
 
 }
@@ -88,6 +88,7 @@ void changeSaveSetting()
         brightnessLevel = (255 * brightnessBarValue) / 61;
         prefs.putInt("Brightness", brightnessLevel);
         prefs.putInt("SleepTime", sleepBarValue * 100);
+        prefs.putInt("Sound", soundSetting);
         prefs.end();
         savedScreen();
     }
@@ -115,7 +116,7 @@ void settingsPage(void) {
     u8g2.drawStr(13, 9, "SETTINGS:");
 
     // Layer 2
-    u8g2.drawStr(4, 20, "Bluetooth");
+    u8g2.drawStr(4, 20, "Sound Haptics");
 
     // download
     u8g2.drawXBMP(4, 3, 7, 7, image_download_bits);
@@ -149,7 +150,7 @@ void settingsPage(void) {
 
     // Layer 13
     u8g2.setFont(u8g2_font_profont10_tr);
-    if(bluetoothSetting == 0)
+    if(soundSetting == 0)
         u8g2.drawStr(99, 20, "OFF");
     else{
         u8g2.drawStr(103, 20, "ON");
@@ -166,7 +167,7 @@ void settingsPage(void) {
     switch (currentSettingIndex)
     {
     case 0:
-        changeBluetoothSetting();
+        changeSoundSetting();
         u8g2.drawXBMP(120, 15, 3, 5, image_arrow_bits);
         break;
     case 1:  
@@ -182,7 +183,7 @@ void settingsPage(void) {
         u8g2.drawXBMP(120, 53, 3, 5, image_arrow_bits);
         break;
     default:
-        changeBluetoothSetting();
+        changeSoundSetting();
         break;
     }
 
