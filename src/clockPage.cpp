@@ -157,6 +157,7 @@ static const unsigned char image_ValueChange_bits[] U8X8_PROGMEM = {0x04, 0x00, 
 
 void countDown()
 {
+    playBuzzerBypass(false);
     u8g2.clearBuffer();
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);

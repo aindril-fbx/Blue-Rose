@@ -140,7 +140,7 @@ bool buzzerOn = false;
 bool lastHeld = false;
 unsigned long buzzerTimer = 0;
 
-const unsigned long BEEP_TIME = 50;
+const unsigned long BEEP_TIME = 30;
 const unsigned long scrollDelay = 180;
 const unsigned long BEEP_DELAY = scrollDelay - BEEP_TIME;
 

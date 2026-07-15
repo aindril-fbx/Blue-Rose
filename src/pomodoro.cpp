@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <clock.h>
+#include <buttonBehav.h>
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
@@ -42,18 +43,61 @@ void resetPomodoro(){
 int blinkDelayTime = 0;
 int blinkDelay = 32;
 
+bool alarmEnabledPomo = false;
+
+void updateAlarmPomo()
+{
+    static const uint16_t pattern[] = {
+        40,  // ON
+        40,  // OFF
+        80,  // ON
+        80,  // OFF
+        160, // ON
+        800  // OFF
+    };
+    static uint8_t step = 0;
+    static unsigned long lastChange = 0;
+
+    if (!alarmEnabledPomo)
+    {
+        playBuzzerBypass(false);
+        step = 0;
+        lastChange = millis();
+        return;
+    }
+
+    if (millis() - lastChange >= pattern[step])
+    {
+        lastChange = millis();
+        step = (step + 1) % 6;
+        playBuzzerBypass((step % 2) == 0);
+    }
+}
+
 void Pomodoro(int pomodoroWORKdelay, int pomodoroBREAKdelay, int cycles = 0) {
 
+    static unsigned long beepNow = millis();
+    unsigned long beepTime = 1000;
+    updateAlarmPomo();
     if(pomoState == WORK && (millis() - stateStartTime >= stateDuration) && (cycles == 0 || currentCycle < cycles)){
         pomoState = BREAK;
         changeState(pomoState, pomodoroWORKdelay, pomodoroBREAKdelay);
+        beepNow = millis();
+        alarmEnabledPomo = true;
     } else if (pomoState == BREAK && (millis() - stateStartTime >= stateDuration) && (cycles == 0 || currentCycle < cycles)){
         pomoState = WORK;
         changeState(pomoState, pomodoroWORKdelay, pomodoroBREAKdelay);
+        beepNow = millis();
+        alarmEnabledPomo = true;
     }
     if(currentCycle >= cycles && cycles != 0){
         clockMode = NONE;
+        alarmEnabledPomo = false;
         return;
+    }
+
+    if(millis() - beepNow > beepTime && alarmEnabledPomo){
+        alarmEnabledPomo = false;
     }
 
     progress = (millis() - stateStartTime) * 100 / stateDuration;
