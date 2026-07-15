@@ -23,6 +23,14 @@ void playBuzzer(bool yes){
     }
 }
 
+void playBuzzerBypass(bool yes){
+    if(yes){
+        digitalWrite(buzzerPin, HIGH);
+    }else{
+        digitalWrite(buzzerPin, LOW);
+    }
+}
+
 // Select Button
 extern const int selectButton;
 int selectButtonTap(){

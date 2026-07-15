@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 void playBuzzer(bool);
+void playBuzzerBypass(bool);
 
 int selectButtonTap();
 int selectButtonHold();

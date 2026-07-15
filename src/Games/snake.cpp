@@ -49,11 +49,12 @@ void Quit(void) {
     u8g2.drawStr(6, 51, "BACK TO MENU");
     playBuzzer(false);
     u8g2.sendBuffer();
+    delay(200);
     while(true){
         if(upButtonHold()){
-            u8g2.clearBuffer();
             gamesMenu(1);
             delay(200);
+            u8g2.clearBuffer();
             break;
         }else if(downButtonHold()){
             delay(200);
@@ -81,21 +82,20 @@ void endScreen()
     u8g2.clearBuffer();
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
+    // rect 3
+    u8g2.drawBox(0, 12, 128, 23);
+    // string 1 copy 1
+    u8g2.setFont(u8g2_font_6x12_tr);
+    u8g2.drawStr(28, 51, "> to RESTART");
     // string 1
-    u8g2.setFont(u8g2_font_6x13O_tr);
+    u8g2.setDrawColor(2);
+    u8g2.setFont(u8g2_font_profont22_tr);
+    if(won){
+        u8g2.drawStr(19, 31, "YOU WIN!");
 
-    if (won)
-    {
-        u8g2.drawStr(40, 33, "YOU WIN!");
+    }else{
+        u8g2.drawStr(13, 31, "YOU LOSE!");
     }
-    else
-    {
-        u8g2.drawStr(40, 33, "YOU LOSE!");
-    }
-
-    // string 2
-    u8g2.setFont(u8g2_font_5x7_tr);
-    u8g2.drawStr(34, 53, "> to RESTART");
 
     if (rightButtonHold() && !snakeStarted)
     {

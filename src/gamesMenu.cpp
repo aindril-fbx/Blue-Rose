@@ -34,6 +34,7 @@ void gamesMenu(int reset = 0)
     {
         gameMode = 0;
         cleanUpGames();
+        delay(300);
     }
 
     if (gameMode)

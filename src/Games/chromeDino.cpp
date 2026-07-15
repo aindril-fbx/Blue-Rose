@@ -1421,6 +1421,7 @@ void QuitDino(void) {
     u8g2.drawStr(6, 51, "BACK TO MENU");
     playBuzzer(false);
     u8g2.sendBuffer();
+	delay(200);
     while(true){
         if(upButtonHold()){
 			u8g2.clearBuffer();
