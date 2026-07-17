@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <stats.h>
 
+#pragma region "buttonVariables"
 extern int previousButtonPressed;
 extern int selectButtonPressed;
 extern int nextButtonPressed;
@@ -12,9 +13,10 @@ bool previousButtonOverride = false;
 bool nextButtonOverride = false;
 bool leftButtonOverride = false;
 bool rightButtonOverride = false;
+#pragma endregion
 
 extern const int buzzerPin;
-extern int soundSetting;
+extern int soundSetting; //* Global setting to toggle sound from keys, alarm sounds remain unaffected
 void playBuzzer(bool yes){
     if(yes && soundSetting){
         digitalWrite(buzzerPin, HIGH);
@@ -31,7 +33,7 @@ void playBuzzerBypass(bool yes){
     }
 }
 
-// Select Button
+//* Select Button
 extern const int selectButton;
 int selectButtonTap(){
     if(selectButtonOverride && !selectButtonPressed){
@@ -56,7 +58,7 @@ int selectButtonHold(){
     return 0;
 }
 
-// Up Button
+//* Up Button
 extern const int upButton;
 int upButtonTap(){
     if(previousButtonOverride && !previousButtonPressed){
@@ -81,7 +83,7 @@ int upButtonHold(){
     return 0;
 }
 
-// Down Button
+//* Down Button
 extern const int downButton;
 int downButtonTap(){
     if(nextButtonOverride && !nextButtonPressed){
@@ -106,7 +108,7 @@ int downButtonHold(){
     return 0;
 }
 
-// Left Button
+//* Left Button
 extern const int leftButton;
 int leftButtonTap(){
     if(leftButtonOverride && !leftButtonPressed){
@@ -131,7 +133,7 @@ int leftButtonHold(){
     return 0;
 }
 
-// Right Button
+//* Right Button
 extern const int rightButton;
 int rightButtonTap(){
     if(rightButtonOverride && !rightButtonPressed){
@@ -156,6 +158,7 @@ int rightButtonHold(){
     return 0;
 }
 
+//* Auxiliary Button functions
 void resetButtonStates(){
     if(digitalRead(upButton) && !previousButtonOverride){
         previousButtonPressed = 0; // reset the previous button pressed state
@@ -182,6 +185,8 @@ int anyButtonHold(){
     return 0;
 }
 
+//* Demo Mode of the device for hands free visual of functionality
+//! dont call this function directly use the "demoMode" function to call it asynchronously
 void demoMovements(void *param){
     Serial.println("demo start");
     //vTaskSuspend(wifiTaskHandle);

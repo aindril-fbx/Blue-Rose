@@ -10,12 +10,19 @@
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 extern Preferences prefs;
 
+#pragma region "Icons"
 static const unsigned char image_Arrow_bits[] U8X8_PROGMEM = {0x01, 0x03, 0x07, 0x03, 0x01};
 static const unsigned char image_download_bits[] U8X8_PROGMEM = {0x9e, 0x3c, 0xcd, 0x59, 0xb7, 0x76, 0x0b, 0x68, 0x05, 0x50, 0x82, 0x20, 0x82, 0x20, 0x81, 0x40, 0x83, 0x60, 0x41, 0x40, 0x22, 0x20, 0x12, 0x20, 0x04, 0x10, 0x08, 0x08, 0xb4, 0x16, 0xc2, 0x21};
 static const unsigned char image_Layer_3_bits[] U8X8_PROGMEM = {0x01, 0x02, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x1c};
-
 static const unsigned char image_download_1_bits[] U8X8_PROGMEM = {0x04, 0x06, 0x07, 0x06, 0x04};
+static const unsigned char image_BeginSelect_bits[] U8X8_PROGMEM = {0xff, 0xff, 0xff, 0xff, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, 0x42, 0x00, 0x01, 0x00, 0x00, 0x00, 0xc2, 0x00, 0x01, 0x00, 0x00, 0x00, 0xc2, 0x01, 0x01, 0x00, 0x00, 0x00, 0xc2, 0x00, 0x01, 0x00, 0x00, 0x00, 0x42, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0xff, 0xff, 0xff, 0xff, 0x03, 0x00};
+static const unsigned char image_ValueChange_bits[] U8X8_PROGMEM = {0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x06, 0x00, 0x00, 0x00, 0x00, 0x06, 0x07, 0x00, 0x00, 0x00, 0x00, 0x0e, 0x06, 0x00, 0x00, 0x00, 0x00, 0x06, 0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0xff, 0xff, 0xff, 0x3f, 0x00};
+static const unsigned char image_Begin_Select_bits[] U8X8_PROGMEM = {0xff, 0xff, 0xff, 0x7f, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x02, 0x01, 0x00, 0x00, 0x40, 0x06, 0x01, 0x00, 0x00, 0x40, 0x0e, 0x01, 0x00, 0x00, 0x40, 0x06, 0x01, 0x00, 0x00, 0x40, 0x02, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0xff, 0xff, 0xff, 0x7f, 0x00};
+static const unsigned char image_TimeSelect_bits[] U8X8_PROGMEM = {0x00, 0x20, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0x03, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0xff, 0xff, 0xff, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00};
+static const unsigned char image_saved_bits[] U8X8_PROGMEM = {0xfe,0x3f,0x09,0x55,0x09,0x95,0x09,0x97,0x09,0x90,0xf1,0x8f,0x01,0x80,0x01,0x80,0x01,0x80,0xf9,0x9f,0x09,0x90,0xe9,0x97,0x09,0x90,0xeb,0xd7,0x09,0x90,0xfe,0x7f};
+#pragma endregion
 
+//* All clock apps
 enum ClockMode
 {
     TIMER,
@@ -28,6 +35,7 @@ enum ClockMode
     ALARMSETTING
 };
 
+#pragma region "Variables"
 ClockMode clockMode = NONE;
 
 int totalStates = 4;
@@ -57,7 +65,9 @@ int tseconds = 0;
 int trepeats = 0;
 unsigned long tduration = 0;
 
-void clockMenu()
+#pragma endregion
+
+void clockMenu() //* Main Menu of the parent clock app
 {
     if (downButtonTap())
     {
@@ -70,20 +80,18 @@ void clockMenu()
     u8g2.clearBuffer();
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
-    // Layer 1
+
     if (arrowBlink > arrowBlinkDelay / 2)
     {
         u8g2.drawXBMP(103, 10, 3, 5, image_download_1_bits);
     }
     u8g2.setFont(u8g2_font_6x10_tr);
-    u8g2.drawStr(3, 10, "# CLOCK");
-
-    // Layer 2
+    u8g2.drawStr(3, 10, "# CLOCK"); // Title
     u8g2.drawLine(5, 13, 5, 52);
 
-    switch (currentState)
+    switch (currentState) //* Switch to the respective clock app
     {
-    case 0:
+    case 0: //* Timer Settings
         if (rightButtonTap())
         {
             delay(100);
@@ -96,7 +104,7 @@ void clockMenu()
         }
         u8g2.drawXBMP(49, 19, 3, 5, image_Arrow_bits);
         break;
-    case 1:
+    case 1: //* Stop watch
         if (rightButtonTap())
         {
             clockMode = STOPWATCH;
@@ -107,7 +115,7 @@ void clockMenu()
         }
         u8g2.drawXBMP(78, 30, 3, 5, image_Arrow_bits);
         break;
-    case 2:
+    case 2: //* Pomodoro Settings
         if (rightButtonTap())
         {
             delay(100);
@@ -125,7 +133,7 @@ void clockMenu()
         }
         u8g2.drawXBMP(73, 41, 3, 5, image_Arrow_bits);
         break;
-    case 3:
+    case 3: //* Alarm Settings
         if (rightButtonTap())
         {
             delay(100);
@@ -144,7 +152,7 @@ void clockMenu()
         }
         u8g2.drawXBMP(53, 52, 3, 5, image_Arrow_bits);
         break;
-    default:
+    default: //* Default: Timer Setting (Should never be in this default state ideally)
         if (rightButtonTap())
         {
             delay(100);
@@ -159,30 +167,18 @@ void clockMenu()
         break;
     }
 
-    // Layer 3
     u8g2.drawXBMP(6, 19, 5, 36, image_Layer_3_bits);
-
-    // Layer 4
     u8g2.setFont(u8g2_font_haxrcorp4089_tr);
     u8g2.drawStr(14, 25, "TIMER");
-    // Layer 4 copy
     u8g2.drawStr(14, 36, "STOPWATCH");
-    // Layer 4 copy
     u8g2.drawStr(14, 47, "POMO DORO");
-
     u8g2.drawStr(14, 58, "ALARM");
-    // download
     u8g2.drawXBMP(109, 4, 15, 16, image_download_bits);
 
     u8g2.sendBuffer();
 }
 
-#pragma region
-static const unsigned char image_BeginSelect_bits[] U8X8_PROGMEM = {0xff, 0xff, 0xff, 0xff, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, 0x42, 0x00, 0x01, 0x00, 0x00, 0x00, 0xc2, 0x00, 0x01, 0x00, 0x00, 0x00, 0xc2, 0x01, 0x01, 0x00, 0x00, 0x00, 0xc2, 0x00, 0x01, 0x00, 0x00, 0x00, 0x42, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0xff, 0xff, 0xff, 0xff, 0x03, 0x00};
-static const unsigned char image_ValueChange_bits[] U8X8_PROGMEM = {0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x06, 0x00, 0x00, 0x00, 0x00, 0x06, 0x07, 0x00, 0x00, 0x00, 0x00, 0x0e, 0x06, 0x00, 0x00, 0x00, 0x00, 0x06, 0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0xff, 0xff, 0xff, 0x3f, 0x00};
-#pragma endregion
-
-void countDown()
+void countDown() //* Count down of the pomodoro starting sequence
 {
     playBuzzerBypass(false);
     u8g2.clearBuffer();
@@ -209,7 +205,6 @@ void countDown()
 }
 void pomodoroSettings()
 {
-
     if (downButtonTap())
     {
         pSettingState = (pSettingState + 1) % 4;
@@ -222,27 +217,22 @@ void pomodoroSettings()
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
 
-    // Layer 2
     u8g2.setFont(u8g2_font_5x8_tr);
     u8g2.drawStr(3, 13, "CYCLES:");
     u8g2.drawStr(3, 27, "FOCUS PERIOD:");
-    // Layer 2 copy
     u8g2.drawStr(3, 43, "BREAK PERIOD:");
 
     String FPStr = String(pFperiod) + " M";
     String BPStr = String(pBperiod) + " M";
     String CStr = String(pCycles);
-    // Layer 6
     u8g2.setFont(u8g2_font_6x10_tr);
     u8g2.drawStr(84, 44, BPStr.c_str());
-    // Layer 6 copy
     u8g2.drawStr(84, 28, FPStr.c_str());
-    // Layer 6 copy
     u8g2.drawStr(84, 14, CStr.c_str());
 
     switch (pSettingState)
     {
-    case 0:
+    case 0: //* Repetition
         if (arrowBlink < arrowBlinkDelay / 2)
         {
             u8g2.drawXBMP(77, 7, 44, 9, image_ValueChange_bits);
@@ -256,7 +246,7 @@ void pomodoroSettings()
             pCycles = max(pCycles - 1, 1);
         }
         break;
-    case 1:
+    case 1: //* Focus Period
         if (arrowBlink < arrowBlinkDelay / 2)
         {
             u8g2.drawXBMP(77, 21, 44, 9, image_ValueChange_bits);
@@ -270,7 +260,7 @@ void pomodoroSettings()
             pFperiod = max(pFperiod - 5, 5);
         }
         break;
-    case 2:
+    case 2: //* Break Period
         if (arrowBlink < arrowBlinkDelay / 2)
         {
             u8g2.drawXBMP(77, 38, 44, 9, image_ValueChange_bits);
@@ -284,7 +274,7 @@ void pomodoroSettings()
             pBperiod = max(pBperiod - 5, 5);
         }
         break;
-    case 3:
+    case 3: //* Begin Button
         if (arrowBlink < arrowBlinkDelay / 2)
         {
             u8g2.drawXBMP(3, 50, 41, 11, image_BeginSelect_bits);
@@ -306,20 +296,12 @@ void pomodoroSettings()
         break;
     }
 
-    // Layer 9
     u8g2.drawStr(5, 59, "BEGIN");
-
     u8g2.sendBuffer();
 }
 
-#pragma region
-static const unsigned char image_Begin_Select_bits[] U8X8_PROGMEM = {0xff, 0xff, 0xff, 0x7f, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x02, 0x01, 0x00, 0x00, 0x40, 0x06, 0x01, 0x00, 0x00, 0x40, 0x0e, 0x01, 0x00, 0x00, 0x40, 0x06, 0x01, 0x00, 0x00, 0x40, 0x02, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0xff, 0xff, 0xff, 0x7f, 0x00};
-static const unsigned char image_TimeSelect_bits[] U8X8_PROGMEM = {0x00, 0x20, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0x03, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0xff, 0xff, 0xff, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00};
-#pragma endregion
-
 void timerSettings(void)
 {
-
     if (tsettingState < 4)
     {
         if (rightButtonTap())
@@ -352,7 +334,7 @@ void timerSettings(void)
     long lastStepDelay = 100;
     switch (tsettingState)
     {
-    case 0:
+    case 0: //* Hours
         if (upButtonHold() && (millis() - lastStep > lastStepDelay))
         {
             thours = min(thours + 1, 99);
@@ -369,7 +351,7 @@ void timerSettings(void)
         }
         u8g2.drawXBMP(15, 3, 26, 30, image_TimeSelect_bits);
         break;
-    case 1:
+    case 1: //* Minutes
         if (upButtonHold() && (millis() - lastStep > lastStepDelay))
         {
             tminutes = min(tminutes + 1, 59);
@@ -390,7 +372,7 @@ void timerSettings(void)
         }
         u8g2.drawXBMP(51, 3, 26, 30, image_TimeSelect_bits);
         break;
-    case 2:
+    case 2: //* Seconds
         if (upButtonHold() && (millis() - lastStep > lastStepDelay))
         {
             tseconds = min(tseconds + 1, 59);
@@ -411,7 +393,7 @@ void timerSettings(void)
         }
         u8g2.drawXBMP(87, 3, 26, 30, image_TimeSelect_bits);
         break;
-    case 3:
+    case 3: //* Repeats
         if (upButtonHold() && (millis() - lastStep > lastStepDelay / 2))
         {
             trepeats = min(trepeats + 1, 10000);
@@ -428,7 +410,7 @@ void timerSettings(void)
         }
         u8g2.drawLine(65, 46, 72, 46);
         break;
-    case 4:
+    case 4: //* Begin
         if (rightButtonTap())
         {
             clockMode = TIMER;
@@ -456,37 +438,26 @@ void timerSettings(void)
 
     u8g2.setFont(u8g2_font_profont22_tr);
     u8g2.drawStr(17, 25, timeString.c_str());
-
-    // Layer 3
     u8g2.setFont(u8g2_font_profont11_tr);
     u8g2.drawStr(66, 44, repeatsString.c_str());
-
-    // Layer 3
     u8g2.setDrawColor(1);
     u8g2.drawStr(15, 44, "Repeats:");
 
     u8g2.sendBuffer();
 }
 
-static const unsigned char image_saved_bits[] U8X8_PROGMEM = {0xfe,0x3f,0x09,0x55,0x09,0x95,0x09,0x97,0x09,0x90,0xf1,0x8f,0x01,0x80,0x01,0x80,0x01,0x80,0xf9,0x9f,0x09,0x90,0xe9,0x97,0x09,0x90,0xeb,0xd7,0x09,0x90,0xfe,0x7f};
-
-void savedScreenAlarm(void) {
-    u8g2.clearBuffer();
-    u8g2.setFontMode(1);
-    u8g2.setBitmapMode(1);
-    // Layer 6
-    u8g2.setFont(u8g2_font_profont11_tr);
-    u8g2.drawStr(50, 48, "SAVED");
-
-    // download
-    u8g2.drawXBMP(57, 18, 16, 16, image_saved_bits);
-
-    u8g2.sendBuffer();
-    delay(1000);
-}
-
 void alarmSettings(void)
 {
+    auto savedScreenAlarm = [](){ //* Data saved screen
+        u8g2.clearBuffer();
+        u8g2.setFontMode(1);
+        u8g2.setBitmapMode(1);
+        u8g2.setFont(u8g2_font_profont11_tr);
+        u8g2.drawStr(50, 48, "SAVED");
+        u8g2.drawXBMP(57, 18, 16, 16, image_saved_bits);
+        u8g2.sendBuffer();
+        delay(1000);
+    };
 
     if (asettingState < 3)
     {
@@ -510,6 +481,7 @@ void alarmSettings(void)
             asettingState = (asettingState + 1) % atotalStates;
         }
     }
+
     u8g2.clearBuffer();
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
@@ -518,35 +490,35 @@ void alarmSettings(void)
     String minutesStr = (aMins < 10) ? "0" + String(aMins) : String(aMins);
     String meridiemStr = aMeridiem == 0 ? "AM" : "PM";
     String timeString = hoursStr + ":" + minutesStr + "|" + meridiemStr;
-    // Layer 2
+
     u8g2.setDrawColor(2);
     u8g2.setFont(u8g2_font_profont22_tr);
     u8g2.drawStr(17, 27, timeString.c_str());
-    // rect 4
+
     u8g2.setDrawColor(1);
     u8g2.drawBox(0, 37, 128, 16);
-    // string 5
+
     u8g2.setDrawColor(2);
     u8g2.setFont(u8g2_font_profont12_tr);
     u8g2.drawStr(4, 49, "ALARM STATUS =");
 
     String enabledStr = alarmEn == 0 ? "OFF" : "ON";
-    // string 6
+
     u8g2.setFont(u8g2_font_profont12_tr);
     u8g2.drawStr(94, 49, enabledStr.c_str());
 
     u8g2.setDrawColor(1);
     u8g2.setFont(u8g2_font_4x6_tr);
     u8g2.drawStr(48, 61, "> SAVE <");
-    // Begin Select
+
     static long lastStep = millis();
     long lastStepDelay = 100;
-    // TimeSelect
+
     u8g2.setDrawColor(1);
 
-    switch (asettingState)
+    switch (asettingState) //* Edit states of alarm screen
     {
-    case 0:
+    case 0: //* Hours
         if(upButtonHold() && millis() - lastStep > lastStepDelay){
             aHours = (aHours + 1)%13;
             lastStep = millis();
@@ -561,7 +533,7 @@ void alarmSettings(void)
         }
         u8g2.drawXBMP(15, 5, 26, 30, image_TimeSelect_bits);
         break;
-    case 1:
+    case 1: //* Minutes
         if(upButtonHold() && millis() - lastStep > lastStepDelay){
             aMins = (aMins + 1)%60;
             lastStep = millis();
@@ -576,7 +548,7 @@ void alarmSettings(void)
         }
         u8g2.drawXBMP(51, 5, 26, 30, image_TimeSelect_bits);
         break;
-    case 2:
+    case 2: //* AM PM
         if(upButtonHold() && millis() - lastStep > lastStepDelay * 3){
             aMeridiem = (aMeridiem + 1)%2;
             lastStep = millis();
@@ -591,7 +563,7 @@ void alarmSettings(void)
         }
         u8g2.drawXBMP(87, 5, 26, 30, image_TimeSelect_bits);
         break;
-    case 3:
+    case 3: //* Enable / Disable the alarm
         if(rightButtonTap() || leftButtonTap()){
             alarmEn = (alarmEn + 1)%2;
         }
@@ -602,7 +574,7 @@ void alarmSettings(void)
         u8g2.setDrawColor(2);
         u8g2.drawXBMP(92, 39, 36, 12, image_Begin_Select_bits);
         break;
-    case 4:
+    case 4: //* Save alarm data
         if(rightButtonTap() || leftButtonTap()){
             prefs.begin("clock", false);
             prefs.putInt("aHours", aHours);
@@ -633,7 +605,7 @@ void alarmSettings(void)
     u8g2.sendBuffer();
 }
 
-void clockFunc(int resetState = 0)
+void clockFunc(int resetState = 0) //* Main parent app responsible for running the respective app
 {
     arrowBlink = (arrowBlink + 1) % arrowBlinkDelay;
     if (resetState == 1)

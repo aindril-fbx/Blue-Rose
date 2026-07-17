@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include <U8g2lib.h> // u8g2 library is used to draw graphics on the OLED display
+#include <U8g2lib.h>
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
-const int numberOfItems = 9; // number of items in the menu
+const int numberOfItems = 9; // Number of Apps in the menu
 extern RTC_DATA_ATTR int currentItemIndex;
 extern int previousItemIndex;
 extern int nextItemIndex;
@@ -290,27 +290,28 @@ void innitIndices()
 int currentFrame = 0;
 int xoffset = 3;
 unsigned long lastFrameTime = 0;
-const unsigned long frameInterval = 50; // milliseconds between frames
-void mainMenu()
+const unsigned long frameInterval = 50; // Interval between frames to control frame rate
+
+void mainMenu() //* Main UI of the device to launch apps
 {
     u8g2.clearBuffer();
     u8g2.setDrawColor(1);
-    if(millis() - lastFrameTime >= frameInterval) {
+    if(millis() - lastFrameTime >= frameInterval) { // Animation playback
         lastFrameTime = millis();
         currentFrame = (currentFrame + 1) % mainMenuAnimation_allArray_LEN;
     }
-    u8g2.drawBitmap(-xoffset, 0, 32 / 8, 64, mainMenuAnimation_allArray[currentFrame]);
+	u8g2.drawBitmap(-xoffset, 0, 32 / 8, 64, mainMenuAnimation_allArray[currentFrame]);
     u8g2.drawXBMP(30 - xoffset, 22, 97, 21, image_Select_bits);
     
-    u8g2.drawBitmap(28 - xoffset, 2, 16 / 8, 16, Icons[previousItemIndex]);
+    u8g2.drawBitmap(28 - xoffset, 2, 16 / 8, 16, Icons[previousItemIndex]); //* Upper Item
     u8g2.setFont(u8g2_font_6x13_mf);
     u8g2.drawStr(48 - xoffset, 16, Icon_Names[previousItemIndex]);
     
-    u8g2.drawBitmap(32 - xoffset, 24, 16 / 8, 16, Icons[currentItemIndex]);
+    u8g2.drawBitmap(32 - xoffset, 24, 16 / 8, 16, Icons[currentItemIndex]); //* Middle Item
     u8g2.setFont(u8g2_font_6x13B_tf);
     u8g2.drawStr(52 - xoffset, 37, Icon_Names[currentItemIndex]);
     
-    u8g2.drawBitmap(28 - xoffset, 46, 16 / 8, 16, Icons[nextItemIndex]);
+    u8g2.drawBitmap(28 - xoffset, 46, 16 / 8, 16, Icons[nextItemIndex]); //* Lower Item
     u8g2.setFont(u8g2_font_6x13_mf);
     u8g2.drawStr(48 - xoffset, 59, Icon_Names[nextItemIndex]);
 

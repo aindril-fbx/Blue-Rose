@@ -14,7 +14,6 @@ static const unsigned char image_PressRight_bits[] U8X8_PROGMEM = {0x00, 0x00, 0
 static const unsigned char image_PressUp_bits[] U8X8_PROGMEM = {0xf8, 0xff, 0xff, 0x00, 0xfe, 0xff, 0xff, 0x03, 0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 0xff, 0x07, 0xfe, 0xff, 0xff, 0x03, 0xfe, 0xff, 0xff, 0x03, 0xfe, 0xff, 0xff, 0x03, 0xfc, 0xff, 0xff, 0x01, 0xfc, 0xff, 0xff, 0x01, 0xfc, 0xff, 0xff, 0x01, 0xf8, 0xff, 0xff, 0x00, 0xf8, 0xff, 0xff, 0x00, 0x78, 0x00, 0xf0, 0x00, 0x30, 0x00, 0x60, 0x00};
 #pragma endregion
 
-
 void ButtonTest(int backValue, int maxBackValue)
 {
     u8g2.clearBuffer();
@@ -24,7 +23,7 @@ void ButtonTest(int backValue, int maxBackValue)
     // Button Layout
     u8g2.drawXBMP(19, 9, 91, 53, image_Layer_6_bits);
 
-    int connected = bleKeyboard.isConnected();
+    int connected = bleKeyboard.isConnected(); //? Should i remove bluetooth functionality, it should solely be button testing imo
     static unsigned long lastKeyStroke = millis();
     if (connected && (millis() - lastKeyStroke > 200))
     {
@@ -51,29 +50,29 @@ void ButtonTest(int backValue, int maxBackValue)
         }
     }
 
+    // MiddlePress
     if(selectButtonHold()){
-        // MiddlePress
         u8g2.drawFilledEllipse(64, 30, 10, 4);
 
     }
 
+    // PressRight
     if(rightButtonHold()){
-        // PressRight
         u8g2.drawXBMP(80, 25, 28, 11, image_PressRight_bits);
     }
     
+    // PressLeft
     if(leftButtonHold()){
-        // PressLeft
         u8g2.drawXBMP(21, 25, 28, 11, image_PressLeft_bits);
     }
 
+    // PressUp
     if(upButtonHold()){
-        // PressUp
         u8g2.drawXBMP(51, 11, 27, 14, image_PressUp_bits);
     }
 
+    // PressDown
     if(downButtonHold()){
-        // PressDown
         u8g2.drawXBMP(52, 40, 27, 14, image_PressDown_bits);
     }
     

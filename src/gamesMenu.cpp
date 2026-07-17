@@ -18,7 +18,7 @@ int BlinkDelay = 16;
 int gameIndex = 0;
 int gameMode = 0;
 
-void cleanUpGames(){
+void cleanUpGames(){ //* Invoke the respective cleanup function of the game
     for (int i = 0; i < gameCount; i++)
     {
         gameList[i]->cleanup();
@@ -27,19 +27,18 @@ void cleanUpGames(){
 }
 
 extern void backtoMenu(void);
-void gamesMenu(int reset = 0)
+void gamesMenu(int reset = 0) //* Main menu of the games, call this function with arg 1 to reset the games
 {
-
-    if (reset == 1)
+    if (reset == 1) 
     {
         gameMode = 0;
         cleanUpGames();
         delay(300);
     }
 
-    if (gameMode)
+    if (gameMode) // If in game
     {
-        gameList[gameIndex]->update();
+        gameList[gameIndex]->update(); // Update function of the game
         return;
     }else{
         static long lastStep = millis();
@@ -62,40 +61,24 @@ void gamesMenu(int reset = 0)
     u8g2.clearBuffer();
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
-    // iconBorder
+
     u8g2.drawXBMP(63, 3, 62, 58, image_iconBorder_bits);
-
-    // Layer 2
     u8g2.setFont(u8g2_font_6x13O_tr);
-    u8g2.drawStr(4, 14, gameList[gameIndex]->Fname);
-
-    // Layer 2 copy
-    u8g2.drawStr(4, 28, gameList[gameIndex]->Lname);
-
-    // Layer 4
+    u8g2.drawStr(4, 14, gameList[gameIndex]->Fname); // First name of the game
+    u8g2.drawStr(4, 28, gameList[gameIndex]->Lname); // Last name of the game
     u8g2.setFont(u8g2_font_5x8_tr);
     String gameNumberStr = String(gameIndex+1) + "/" + String(gameCount);
     u8g2.drawStr(11, 61, gameNumberStr.c_str());
-
-    // Layer 5
     u8g2.setFont(u8g2_font_profont11_tr);
     u8g2.drawStr(6, 45, "START");
-
-    // arrowRight
     u8g2.drawXBMP(38, 39, 3, 5, image_arrowRight_bits);
 
     if (Blink < BlinkDelay / 2)
     {
-        // select
         u8g2.drawXBMP(4, 35, 40, 13, image_select_bits);
     }
-
-    // DinoIcon
     u8g2.drawXBMP(63, 3, 62, 58, gameList[gameIndex]->Icon);
-
-    // arrows
     u8g2.drawXBMP(4, 56, 29, 4, image_arrows_bits);
-
     u8g2.sendBuffer();
 }
 
