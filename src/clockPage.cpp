@@ -44,7 +44,12 @@ int tsettingState = 0;
 int ttotalStates = 5;
 
 int asettingState = 0;
-int atotalStates = 4;
+int atotalStates = 5;
+
+unsigned int aHours = 0;
+unsigned int aMins = 0;
+unsigned int aMeridiem = 0;
+extern int alarmEn;
 
 int thours = 0;
 int tminutes = 0;
@@ -125,6 +130,13 @@ void clockMenu()
         {
             delay(100);
             clockMode = ALARMSETTING;
+
+            prefs.begin("clock", false);
+            aHours = prefs.getInt("aHours", 0);
+            aMins = prefs.getInt("aMins", 0);
+            aMeridiem = prefs.getInt("aMeridien", 0);
+            alarmEn = prefs.getInt("aEnabled", 0);
+
         }
         if (arrowBlink < arrowBlinkDelay / 2)
         {
@@ -456,6 +468,23 @@ void timerSettings(void)
     u8g2.sendBuffer();
 }
 
+static const unsigned char image_saved_bits[] U8X8_PROGMEM = {0xfe,0x3f,0x09,0x55,0x09,0x95,0x09,0x97,0x09,0x90,0xf1,0x8f,0x01,0x80,0x01,0x80,0x01,0x80,0xf9,0x9f,0x09,0x90,0xe9,0x97,0x09,0x90,0xeb,0xd7,0x09,0x90,0xfe,0x7f};
+
+void savedScreenAlarm(void) {
+    u8g2.clearBuffer();
+    u8g2.setFontMode(1);
+    u8g2.setBitmapMode(1);
+    // Layer 6
+    u8g2.setFont(u8g2_font_profont11_tr);
+    u8g2.drawStr(50, 48, "SAVED");
+
+    // download
+    u8g2.drawXBMP(57, 18, 16, 16, image_saved_bits);
+
+    u8g2.sendBuffer();
+    delay(1000);
+}
+
 void alarmSettings(void)
 {
 
@@ -484,28 +513,48 @@ void alarmSettings(void)
     u8g2.clearBuffer();
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
+
+    String hoursStr = (aHours < 10) ? "0" + String(aHours) : String(aHours);
+    String minutesStr = (aMins < 10) ? "0" + String(aMins) : String(aMins);
+    String meridiemStr = aMeridiem == 0 ? "AM" : "PM";
+    String timeString = hoursStr + ":" + minutesStr + "|" + meridiemStr;
     // Layer 2
     u8g2.setDrawColor(2);
     u8g2.setFont(u8g2_font_profont22_tr);
-    u8g2.drawStr(17, 27, "00:00|PM");
+    u8g2.drawStr(17, 27, timeString.c_str());
     // rect 4
     u8g2.setDrawColor(1);
-    u8g2.drawBox(0, 40, 128, 16);
+    u8g2.drawBox(0, 37, 128, 16);
     // string 5
     u8g2.setDrawColor(2);
     u8g2.setFont(u8g2_font_profont12_tr);
-    u8g2.drawStr(5, 52, "ALARM STATUS =");
+    u8g2.drawStr(4, 49, "ALARM STATUS =");
+
+    String enabledStr = alarmEn == 0 ? "OFF" : "ON";
     // string 6
     u8g2.setFont(u8g2_font_profont12_tr);
-    u8g2.drawStr(94, 52, "ON");
+    u8g2.drawStr(94, 49, enabledStr.c_str());
+
+    u8g2.setDrawColor(1);
+    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.drawStr(48, 61, "> SAVE <");
     // Begin Select
     static long lastStep = millis();
     long lastStepDelay = 100;
     // TimeSelect
     u8g2.setDrawColor(1);
+
     switch (asettingState)
     {
     case 0:
+        if(upButtonHold() && millis() - lastStep > lastStepDelay){
+            aHours = (aHours + 1)%13;
+            lastStep = millis();
+        }
+        if(downButtonHold() && millis() - lastStep > lastStepDelay){
+            aHours = (aHours - 1 + 13)%13;
+            lastStep = millis();
+        }
         if (arrowBlink < arrowBlinkDelay / 2)
         {
             break;
@@ -513,6 +562,14 @@ void alarmSettings(void)
         u8g2.drawXBMP(15, 5, 26, 30, image_TimeSelect_bits);
         break;
     case 1:
+        if(upButtonHold() && millis() - lastStep > lastStepDelay){
+            aMins = (aMins + 1)%60;
+            lastStep = millis();
+        }
+        if(downButtonHold() && millis() - lastStep > lastStepDelay){
+            aMins = (aMins - 1 + 60)%60;
+            lastStep = millis();
+        }
         if (arrowBlink < arrowBlinkDelay / 2)
         {
             break;
@@ -520,6 +577,14 @@ void alarmSettings(void)
         u8g2.drawXBMP(51, 5, 26, 30, image_TimeSelect_bits);
         break;
     case 2:
+        if(upButtonHold() && millis() - lastStep > lastStepDelay * 3){
+            aMeridiem = (aMeridiem + 1)%2;
+            lastStep = millis();
+        }
+        if(downButtonHold() && millis() - lastStep > lastStepDelay * 3){
+            aMeridiem = (aMeridiem - 1 + 2)%2;
+            lastStep = millis();
+        }
         if (arrowBlink < arrowBlinkDelay / 2)
         {
             break;
@@ -527,12 +592,34 @@ void alarmSettings(void)
         u8g2.drawXBMP(87, 5, 26, 30, image_TimeSelect_bits);
         break;
     case 3:
+        if(rightButtonTap() || leftButtonTap()){
+            alarmEn = (alarmEn + 1)%2;
+        }
         if (arrowBlink < arrowBlinkDelay / 2)
         {
             break;
         }
         u8g2.setDrawColor(2);
-        u8g2.drawXBMP(92, 42, 36, 12, image_Begin_Select_bits);
+        u8g2.drawXBMP(92, 39, 36, 12, image_Begin_Select_bits);
+        break;
+    case 4:
+        if(rightButtonTap() || leftButtonTap()){
+            prefs.begin("clock", false);
+            prefs.putInt("aHours", aHours);
+            prefs.putInt("aMins", aMins);
+            prefs.putInt("aMeridien", aMeridiem);
+            prefs.putInt("aEnabled", alarmEn);
+            prefs.end();
+
+            if(alarmEn) syncTimeAsync();
+            savedScreenAlarm();
+            clockMode = NONE;
+        }
+        if (arrowBlink < arrowBlinkDelay / 2)
+        {
+            break;
+        }
+        u8g2.drawFrame(45, 54, 37, 9);
         break;
     default:
         if (arrowBlink < arrowBlinkDelay / 2)

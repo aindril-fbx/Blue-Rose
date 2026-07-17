@@ -6,8 +6,10 @@
 #include <time.h>
 #include <secrets.h>
 #include <esp_sntp.h>
+#include <Preferences.h>
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
+extern Preferences prefs;
 
 #pragma region "Globe Animation"
 // '0000', 64x64px
@@ -2209,6 +2211,8 @@ unsigned long nowCopy;
 unsigned long lastNowUs;
 
 TaskHandle_t wifiTaskHandle = NULL;
+extern time_t timeUntilAlarm;
+extern time_t currentEpoch;
 void wifiSetup(void *param)
 {
     WiFi.mode(WIFI_STA);
@@ -2255,7 +2259,30 @@ void wifiSetup(void *param)
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
     wifiOn = 0;
+
+    struct tm alarmTime;
+
+    localtime_r(&now, &alarmTime);
+    prefs.begin("clock", false);
+    int alarmEnabled = prefs.getInt("aEnabled", 0);
+    alarmTime.tm_hour = prefs.getInt("aHours", 0) + (prefs.getInt("aMeridien", 0) == 0 ? 0 : 12);
+    alarmTime.tm_min = prefs.getInt("aMins", 0);
+    alarmTime.tm_sec = 0;
+
+    time_t alarmEpoch = mktime(&alarmTime);
+
+    if(alarmEpoch <= now){
+        alarmTime.tm_mday++;
+        alarmEpoch = mktime(&alarmTime);
+    }
+    if(alarmEnabled){
+        timeUntilAlarm = alarmEpoch - now;
+    }
+    Serial.printf("Alarm in %lld seconds\n", (long long)(alarmEpoch - now));
+
+    
     //demoMode(); // Uncomment this line to enter demo mode after starting the esp
+    wifiTaskHandle = NULL;
     vTaskDelete(NULL);
 }
 
@@ -2266,14 +2293,19 @@ int current_planetFrame = 0;
 bool locked = 0;
 
 void syncTimeAsync()
-{
-    xTaskCreate(
-        wifiSetup,
-        "WiFi Time",
-        4096,
-        NULL,
-        1,
-        &wifiTaskHandle);
+{   
+    Serial.println("Sync time!");
+    if (wifiTaskHandle == NULL)
+    {
+        xTaskCreate(
+            wifiSetup,
+            "WiFi",
+            4096,
+            NULL,
+            1,
+            &wifiTaskHandle
+        );
+    }
     gotInfo = 1;
 }
 
