@@ -2,13 +2,9 @@
 #include <Arduino.h>
 #include <buttonBehav.h>
 #include <Preferences.h>
-#include <NimBLEDevice.h>
-#include <BleKeyboard.h>
-
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
-extern BleKeyboard bleKeyboard;
 extern Preferences prefs;
 
 extern int maxAfkTime;
@@ -145,8 +141,6 @@ void settingsPage(void) {
     } else {
         u8g2.drawXBMP(91, 50, 24, 11, image_save_bits);
     }
-    // Layer 12
-    u8g2.drawFrame(94, 12, 21, 10);
 
     // Layer 13
     u8g2.setFont(u8g2_font_profont10_tr);
@@ -185,6 +179,12 @@ void settingsPage(void) {
     default:
         changeSoundSetting();
         break;
+    }
+    u8g2.setDrawColor(2);
+    if(soundSetting){
+        u8g2.drawBox(94, 12, 21, 10);
+    }else{
+        u8g2.drawFrame(94, 12, 21, 10);
     }
 
     u8g2.sendBuffer();

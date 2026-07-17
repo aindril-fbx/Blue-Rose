@@ -14,33 +14,19 @@ static const unsigned char image_OutsideFrame_bits[] U8X8_PROGMEM = {0xf8, 0xff,
 #pragma endregion
 
 const int totalApps = 12;
-const char AppNames[totalApps][20] = {
-    "Obsidian",
-    "Whatsapp",
-    "Vivaldi",
-    "Monkey Type",
-    "Code",
-    "Blender",
-    "Spotify",
-    "Steam",
-    "Lock",
-    "Hibernate",
-    "ChatGPT",
-    "Youtube",
-};
-const char ProcessNames[totalApps][20] = {
-    "Obsidian",
-    "Whatsapp",
-    "Vivaldi",
-    "Monkey Type",
-    "Code",
-    "Blender",
-    "Spotify",
-    "Steam",
-    "Lock",
-    "Hibernate",
-    "ChatGPT",
-    "youtube.com",
+const char AppNames[totalApps][2][20] = {
+    {"Obsidian", "Obsidian" },
+    {"Whatsapp", "Whatsapp" },
+    {"Vivaldi", "Vivaldi"},
+    {"Monkey Type", "Monkey Type"},
+    {"Code", "Code"},
+    {"Blender", "Blender"},
+    {"Spotify", "Spotify"},
+    {"Steam","Steam"},
+    {"Lock","Lock"},
+    {"Hibernate","Hibernate"},
+    {"ChatGPT", "ChatGPT"},
+    {"Youtube", "youtube.com"},
 };
 
 static const unsigned char noBluetooth[] U8X8_PROGMEM = {0x40, 0x00, 0xc1, 0x00, 0x42, 0x01, 0x44, 0x02, 0x48, 0x04, 0x10, 0x04, 0x20, 0x02, 0x40, 0x00, 0xa0, 0x00, 0x50, 0x01, 0x48, 0x02, 0x44, 0x04, 0x40, 0x0a, 0x40, 0x11, 0x80, 0x20, 0x00, 0x00};
@@ -108,9 +94,10 @@ void PC_Control(void)
         bleKeyboard.press(KEY_LEFT_ALT);
         bleKeyboard.press(KEY_BACKSPACE);
         delay(100);
+        playBuzzer(false);
         bleKeyboard.releaseAll();
         delay(500);
-        bleKeyboard.print(ProcessNames[currentAppIndex]);
+        bleKeyboard.print(AppNames[currentAppIndex][1]);
         delay(500);
         bleKeyboard.write(KEY_RETURN);
         Serial.println("BLE Command Sent");
@@ -162,15 +149,15 @@ void PC_Control(void)
 
     // Layer 6
     u8g2.setFont(u8g2_font_profont12_tr);
-    u8g2.drawStr(8, 24, AppNames[(currentAppIndex - 1 + totalApps) % totalApps]);
+    u8g2.drawStr(8, 24, AppNames[(currentAppIndex - 1 + totalApps) % totalApps][0]);
 
     // Layer 5
     u8g2.setFont(u8g2_font_t0_15b_tr);
-    u8g2.drawStr(8, 41, AppNames[currentAppIndex]);
+    u8g2.drawStr(8, 41, AppNames[currentAppIndex][0]);
 
     // Layer 7
     u8g2.setFont(u8g2_font_profont12_tr);
-    u8g2.drawStr(8, 57, AppNames[(currentAppIndex + 1) % totalApps]);
+    u8g2.drawStr(8, 57, AppNames[(currentAppIndex + 1) % totalApps][0]);
 
     // Layer 8
     u8g2.setDrawColor(2);
