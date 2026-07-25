@@ -1,3 +1,4 @@
+#pragma region "Header Files"
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <esp_sleep.h>
@@ -22,30 +23,30 @@
 #include "soc/rtc_cntl_reg.h"
 
 #include <BleKeyboard.h>
-
-#define WAKE_PIN
+#pragma endregion
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
 
 BleKeyboard bleKeyboard;
 Preferences prefs;
 
+#pragma region "Button Variables"
 extern const int selectButton = 33;
 extern const int upButton = 18;
 extern const int downButton = 19;
 extern const int leftButton = 4;
 extern const int rightButton = 32;
 extern const int buzzerPin = 27;
-
-RTC_DATA_ATTR int currentItemIndex = 0; // current item index in the menu
-int previousItemIndex;                  // previous item index in the menu
-int nextItemIndex;                      // next item index in the menu
-
 int previousButtonPressed = 0;
 int selectButtonPressed = 0;
 int nextButtonPressed = 0;
 int leftButtonPressed = 0;
 int rightButtonPressed = 0;
+#pragma endregion
+
+RTC_DATA_ATTR int currentItemIndex = 0; // current item index in the menu
+int previousItemIndex;                  // previous item index in the menu
+int nextItemIndex;                      // next item index in the menu
 
 RTC_DATA_ATTR int currentScene = 0;      // current scene index, -1 = face, 0 = mainMenu, 1 = Compass, 2 = Game Menu
 RTC_DATA_ATTR int wokefromSleep = 0;     // flag to indicate if the device woke up from sleep
@@ -140,7 +141,7 @@ void setup(void)
         wokeFromSleepScreen();
         wokefromSleep = 0;
     }
-    // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
     pinMode(A0, INPUT);
     pinMode(upButton, INPUT_PULLUP);
     pinMode(selectButton, INPUT_PULLUP);
@@ -161,33 +162,40 @@ void setup(void)
     maxAfkTime = prefs.getInt("SleepTime", 2000);      // Sleep timer
     brightnessLevel = prefs.getInt("Brightness", 255); // Brightness
     soundSetting = prefs.getInt("Sound", 0);           // Sound haptics toggle
-    sleepBarValue = maxAfkTime / 100;
     brightnessBarValue = (brightnessLevel * 61) / 255;
-    u8g2.setContrast(brightnessLevel);
+    sleepBarValue = maxAfkTime / 100;
     prefs.end();
 
     prefs.begin("clock", false); //* Alarm Enabled setting
     alarmEn = prefs.getInt("aEnabled", 0);
+    prefs.end();
 
+    u8g2.setContrast(brightnessLevel);
     delay(100);
     syncTimeAsync(); // Sync time when device wakes from sleep
 
     esp_sleep_wakeup_cause_t cause = esp_sleep_get_wakeup_cause();
-    if (cause == ESP_SLEEP_WAKEUP_TIMER && buzzAlarm)
-    { // Start alarm if the device woke up from sleep at alarm time.
-        alarmSound = true;
-        mainAlarmScreen();
-        while (true)
+    if (cause == ESP_SLEEP_WAKEUP_TIMER)
+    {
+        currentScene = 5;
+        clockMode = REALTIME;
+        // Start alarm if the device woke up from sleep at alarm time.
+        if (buzzAlarm)
         {
-            updateAlarmBeepBeep();
-            if (rightButtonHold())
+            alarmSound = true;
+            mainAlarmScreen();
+            while (true)
             {
-                buzzAlarm = false;
-                break;
+                updateAlarmBeepBeep();
+                if (rightButtonHold())
+                {
+                    buzzAlarm = false;
+                    break;
+                }
             }
+            alarmSound = false;
+            syncTimeAsync();
         }
-        alarmSound = false;
-        syncTimeAsync();
     }
 }
 
@@ -268,9 +276,7 @@ void loop(void)
     if (anyButtonHold())
     { //* AFK condition, reset timer when any button is pressed
         afkTime = 0;
-    }
-    else
-    {
+    }else{
         afkTime += 1;
     }
 
@@ -325,12 +331,9 @@ void loop(void)
             }
         }
         esp_sleep_enable_ext0_wakeup((gpio_num_t)33, 0); // SELECT button is used for waking up the device
-        u8g2.setPowerSave(1);
+        u8g2.setPowerSave(1); // Turn screen off before shutting down
         delay(50);
-        while (digitalRead(leftButton) == LOW)
-        {
-            delay(10);
-        }
+        while (digitalRead(leftButton) == LOW) delay(10);// Make sure the wake pin is not grounded before going going to sleep
         wokefromSleep = 1;
         esp_deep_sleep_start();
         return;
@@ -368,13 +371,14 @@ void loop(void)
             lastScroll = millis();
         }
         break;
+
     case 1: // TODO: REMOVE THE COMPASS FOR MEDIA CONTROL
         //* COMPASS
         compass(!leftButtonHold() && !rightButtonHold() ? 0 : (!leftButtonHold() && rightButtonHold() ? -1 : 1), downButtonTap()); // display the compass
 
         if (selectButtonTap())
         {
-            currentScene = 0; // if the select button is pressed, go back to the main menu
+            currentScene = 0;
         }
         break;
 
@@ -387,7 +391,7 @@ void loop(void)
             {
 
                 backTime = 0;
-                currentScene = 0; // if the select button is pressed, go back to the main menu
+                currentScene = 0;
                 return;
             }
         }
@@ -397,13 +401,12 @@ void loop(void)
         }
         ButtonTest(backTime, backDelay);
         break;
-        ;
 
     case 3: //* PC CONTROL
         PC_Control();
         if (selectButtonTap())
         {
-            currentScene = 0; // if the select button is pressed, go back to the main menu
+            currentScene = 0;
         }
         break;
 
@@ -411,7 +414,7 @@ void loop(void)
         settingsPage();
         if (selectButtonTap())
         {
-            currentScene = 0; // if the select button is pressed, go back to the main menu
+            currentScene = 0;
         }
         break;
 
@@ -426,7 +429,7 @@ void loop(void)
             }
             clockFunc(1);
             gotInfo = 0;
-            currentScene = 0; // if the select button is pressed, go back to the main menu
+            currentScene = 0;
             syncTimeAsync();
         }
         break;

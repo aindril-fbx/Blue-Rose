@@ -2197,27 +2197,43 @@ static const unsigned char image_Locked_bits[] U8X8_PROGMEM = {0x07, 0x35, 0x47,
 static const unsigned char connectingIcon[] U8X8_PROGMEM = {0x00, 0x00, 0x00, 0x1e, 0x0c, 0x20, 0x34, 0x4c, 0xc6, 0x50, 0x15, 0x57, 0x49, 0x45, 0x09, 0x07, 0x91, 0x08, 0x51, 0x12, 0x22, 0x10, 0xc2, 0x24, 0x04, 0x23, 0x0c, 0x3c, 0x30, 0x08, 0xc0, 0x07};
 #pragma endregion;
 
+#pragma region "Variables"
+
 const long gmtOffset_sec = 19800;
 const int daylightOffset_sec = 0;
-
-RTC_DATA_ATTR time_t baseEpoch = 0;
-RTC_DATA_ATTR time_t now = 0;
+RTC_DATA_ATTR time_t baseEpoch;
+RTC_DATA_ATTR time_t now;
 time_t lastSyncEpoch = 0;
-
 bool gotInfo = 0;
 WiFiMulti wifiMulti;
 bool wifiOn = 0;
-unsigned long nowCopy;
-unsigned long lastNowUs;
-
+RTC_DATA_ATTR unsigned long nowCopy;
+RTC_DATA_ATTR unsigned long lastNowUs;
 TaskHandle_t wifiTaskHandle = NULL;
 extern time_t timeUntilAlarm;
 extern time_t currentEpoch;
+extern int afkTime;
+unsigned long lastFrame = 0;
+unsigned long frameInterval = 100;
+int current_planetFrame = 0;
+bool locked = 0;
+
+#pragma endregion
+
+// Initiate wifi
 void wifiSetup(void *param)
 {
     WiFi.mode(WIFI_STA);
     wifiOn = 1;
-    for (int i = 0; i < WIFI_COUNT; i++)
+    
+    //* Following is the struction of secrets.h
+    //     #pragma once
+    // struct WiFiCred { const char* ssid; const char* pass; };
+    // static const WiFiCred wifiCreds[] = { {"WifiName", "WifiPassword"}, };
+    // static const int WIFI_COUNT = sizeof(wifiCreds) / sizeof(wifiCreds[0]);
+    //*
+
+    for (int i = 0; i < WIFI_COUNT; i++) // Loop through all the wifi ssids present in secrets.h
     {
         wifiMulti.addAP(
             wifiCreds[i].ssid,
@@ -2286,12 +2302,7 @@ void wifiSetup(void *param)
     vTaskDelete(NULL);
 }
 
-extern int afkTime;
-unsigned long lastFrame = 0;
-unsigned long frameInterval = 100;
-int current_planetFrame = 0;
-bool locked = 0;
-
+// Function to get the time from the servers
 void syncTimeAsync()
 {   
     Serial.println("Sync time!");
@@ -2337,7 +2348,6 @@ void showStats()
     // Calender
     u8g2.drawXBMP(3, 3, 30, 38, image_Calender_bits);
 
-    // Layer 7
     u8g2.setFont(u8g2_font_profont22_tr);
     char date[3];
     strftime(date, sizeof(date), "%d", t);
@@ -2348,7 +2358,6 @@ void showStats()
     strftime(month, sizeof(month), "%b", t);
     u8g2.drawStr(9, 37, month);
 
-    // Layer 8
     char year[5];
     strftime(year, sizeof(year), "%Y", t);
     u8g2.drawStr(36, 22, year);
