@@ -1,3 +1,4 @@
+#pragma region "Header Files"
 #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
@@ -7,6 +8,7 @@
 #include <secrets.h>
 #include <esp_sntp.h>
 #include <Preferences.h>
+#pragma endregion
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 extern Preferences prefs;
@@ -2227,7 +2229,7 @@ void wifiSetup(void *param)
     wifiOn = 1;
     
     //* Following is the struction of secrets.h
-    //     #pragma once
+    // #pragma once
     // struct WiFiCred { const char* ssid; const char* pass; };
     // static const WiFiCred wifiCreds[] = { {"WifiName", "WifiPassword"}, };
     // static const int WIFI_COUNT = sizeof(wifiCreds) / sizeof(wifiCreds[0]);
@@ -2235,12 +2237,10 @@ void wifiSetup(void *param)
 
     for (int i = 0; i < WIFI_COUNT; i++) // Loop through all the wifi ssids present in secrets.h
     {
-        wifiMulti.addAP(
-            wifiCreds[i].ssid,
-            wifiCreds[i].pass);
+        wifiMulti.addAP(wifiCreds[i].ssid,wifiCreds[i].pass);
     }
 
-    while (wifiMulti.run() != WL_CONNECTED)
+    while (wifiMulti.run() != WL_CONNECTED) // Keep trying untill connected to wifi
     {
         vTaskDelay(pdMS_TO_TICKS(500));
     }
@@ -2248,10 +2248,10 @@ void wifiSetup(void *param)
     configTime(gmtOffset_sec, daylightOffset_sec,
                "time.google.com",
                "time.cloudflare.com",
-               "pool.ntp.org");
+               "pool.ntp.org"); // Providers
 
     struct tm timeinfo;
-    while (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED)
+    while (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED) // keep trying till date and time have been synced
     {
         vTaskDelay(pdMS_TO_TICKS(100));
         
@@ -2362,7 +2362,7 @@ void showStats()
     strftime(year, sizeof(year), "%Y", t);
     u8g2.drawStr(36, 22, year);
 
-    if (rightButtonTap())
+    if (downButtonTap())
     {
         locked = !locked;
     }

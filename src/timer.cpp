@@ -1,18 +1,21 @@
+#pragma region "Header files"
 #include <U8g2lib.h>
 #include <Arduino.h>
 #include <clock.h>
 #include <buttonBehav.h>
+#pragma endregion
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
+#pragma region "Variables"
 bool Trunning = false;
 unsigned long startTime_ = 0;
 unsigned long duration = 0;
 unsigned long remainingTime = 0;
 int repeatsLeft = 0;
-
 extern int afkTime;
 unsigned long elapsed;
+#pragma endregion
 
 void startTimer(unsigned long timerDuration, int repeats)
 {
@@ -29,13 +32,11 @@ void resumeTimer()
     startTime_ = millis() - (duration - remainingTime);
     Trunning = true;
 }
-
 void pauseTimer()
 {
     remainingTime = duration - (millis() - startTime_);
     Trunning = false;
 }
-
 void resetTimer()
 {
     Trunning = false;
@@ -43,8 +44,8 @@ void resetTimer()
     remainingTime = duration;
 }
 
+#pragma region "Beep Beep Functions"
 bool alarmEnabled = false;
-
 void updateAlarm()
 {
     static const uint16_t pattern[] = {
@@ -73,9 +74,7 @@ void updateAlarm()
         playBuzzerBypass((step % 2) == 0);
     }
 }
-
 bool alarmEnabled2 = true;
-
 void updateAlarm2()
 {
     static const uint16_t pattern[] = {120, 80, 120, 500};
@@ -98,6 +97,7 @@ void updateAlarm2()
         playBuzzerBypass(step == 0 || step == 2);
     }
 }
+#pragma endregion
 
 void alarmScreen(void) {
     u8g2.clearBuffer();
@@ -118,7 +118,7 @@ void alarmScreen(void) {
 void Timer()
 {
     static unsigned long beepNow = millis();
-    // updateAlarm();
+    
     afkTime = 0;
     if (rightButtonTap())
     {
@@ -194,12 +194,10 @@ void Timer()
     int Tprogress = map(elapsed, 0, duration, 0, 128);
     u8g2.drawBox(0, 0, Tprogress, 64);
 
-    // Layer 2
     u8g2.setDrawColor(2);
     u8g2.setFont(u8g2_font_profont22_tr);
     u8g2.drawStr(17, 37, combinedTime.c_str());
 
-    // Layer 3
     u8g2.setFont(u8g2_font_profont11_tr);
     u8g2.drawStr(17, 55, String(repeatsLeft).c_str());
     u8g2.sendBuffer();

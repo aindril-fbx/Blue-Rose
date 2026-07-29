@@ -49,7 +49,7 @@ void version() {
     u8g2.setBitmapMode(1);
     // string 2
     u8g2.setFont(u8g2_font_6x10_tr);
-    u8g2.drawStr(2, 36, "V 0.8.333");
+    u8g2.drawStr(2, 36, "V 0.8.890");
 
     // string 2
     u8g2.setFont(u8g2_font_haxrcorp4089_tr);
