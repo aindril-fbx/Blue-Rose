@@ -70,7 +70,7 @@ void gamesMenu(int reset = 0) //* Main menu of the games, call this function wit
     String gameNumberStr = String(gameIndex+1) + "/" + String(gameCount);
     u8g2.drawStr(11, 61, gameNumberStr.c_str());
     u8g2.setFont(u8g2_font_profont11_tr);
-    u8g2.drawStr(6, 45, "START");
+    u8g2.drawStr(6, 45, "RUN");
     u8g2.drawXBMP(38, 39, 3, 5, image_arrowRight_bits);
 
     if (Blink < BlinkDelay / 2)

@@ -372,7 +372,7 @@ void loop(void)
         }
         break;
 
-    case 1: // TODO: REMOVE THE COMPASS FOR MEDIA CONTROL
+    case 1: // TODO: REMOVE THE COMPASS AND IMPLEMENT MEDIA CONTROL
         //* COMPASS
         compass(!leftButtonHold() && !rightButtonHold() ? 0 : (!leftButtonHold() && rightButtonHold() ? -1 : 1), downButtonTap()); // display the compass
 

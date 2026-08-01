@@ -63,7 +63,7 @@ const unsigned char *Icons[numberOfItems] = {
 };
 
 const char Icon_Names[numberOfItems][20] = {
-    "Back", "Compass", "Button Test", "PC Control", "Settings", "Clock", "Games", "Version", "Text Screen"};
+    "Back", "Compass", "Button Test", "PC Control", "Settings", "Clock", "Apps", "Version", "Text Screen"};
 #pragma endregion
 
 #pragma region "MainMenuAnimation"
